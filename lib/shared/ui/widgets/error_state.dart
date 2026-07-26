@@ -35,7 +35,7 @@ class ErrorState extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return GlassSurface(
-      blur: 20,
+      blur: 10,
       opacity: 0.1,
       tintColor: palette.white,
       borderOpacity: 0.15,

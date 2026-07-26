@@ -7,6 +7,8 @@ import 'package:weather_app/configurations/navigation/app_routes.dart';
 import 'package:weather_app/configurations/ui/dimensions/app_dimensions.dart';
 import 'package:weather_app/configurations/ui/theme/theme_data.dart';
 import 'package:weather_app/core/services/prefs/app_preferences.dart';
+import 'package:weather_app/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:weather_app/features/settings/presentation/bloc/settings_state.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_bloc.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_event.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_state.dart';
@@ -32,7 +34,18 @@ class WeatherScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) =>
           sl<WeatherBloc>()..add(WeatherFetchRequested(initialCity)),
-      child: const WeatherScreenContent(),
+      child: BlocListener<SettingsCubit, SettingsState>(
+        listenWhen: (previous, current) => previous.locale != current.locale,
+        listener: (context, state) {
+          final bloc = context.read<WeatherBloc>();
+          if (bloc.state.searchQuery.isNotEmpty) {
+            bloc.add(
+              WeatherFetchRequested(bloc.state.searchQuery, forceRefresh: true),
+            );
+          }
+        },
+        child: const WeatherScreenContent(),
+      ),
     );
   }
 }
@@ -84,7 +97,6 @@ class _WeatherScreenContentState extends State<WeatherScreenContent> {
     if (city.trim().isEmpty) return;
     final trimmedCity = city.trim();
     context.read<WeatherBloc>().add(WeatherFetchRequested(trimmedCity));
-    sl<AppPreferences>().setLastCity(trimmedCity);
     FocusScope.of(context).unfocus();
   }
 
@@ -103,8 +115,8 @@ class _WeatherScreenContentState extends State<WeatherScreenContent> {
 
     return BlocBuilder<WeatherBloc, WeatherState>(
       builder: (context, state) {
-        final gradient = WeatherVisuals.backgroundGradient(state.condition);
-        final blobs = WeatherVisuals.blobColors(state.condition);
+        final gradient = WeatherVisuals.backgroundGradient(state.conditionCode);
+        final blobs = WeatherVisuals.blobColors(state.conditionCode);
 
         return Scaffold(
           extendBodyBehindAppBar: true,
@@ -146,6 +158,7 @@ class _WeatherScreenContentState extends State<WeatherScreenContent> {
                         ]
                       : [
                           IconButton(
+                            tooltip: l10n.searchAction,
                             icon: Icon(
                               Iconsax.search_normal_1,
                               color: palette.white,
@@ -155,6 +168,7 @@ class _WeatherScreenContentState extends State<WeatherScreenContent> {
                                 setState(() => _isSearching = true),
                           ),
                           IconButton(
+                            tooltip: l10n.openSettings,
                             icon: Icon(
                               Iconsax.setting_2,
                               color: palette.white,
@@ -173,9 +187,11 @@ class _WeatherScreenContentState extends State<WeatherScreenContent> {
             height: double.infinity,
             decoration: BoxDecoration(gradient: gradient),
             child: RefreshIndicator(
-              onRefresh: () async {
-                context.read<WeatherBloc>().add(
-                  const WeatherRefreshRequested(),
+              onRefresh: () {
+                final bloc = context.read<WeatherBloc>();
+                bloc.add(const WeatherRefreshRequested());
+                return bloc.stream.firstWhere(
+                  (next) => next.status != WeatherStatus.loading,
                 );
               },
               color: palette.white,
@@ -283,19 +299,16 @@ class _SearchField extends StatelessWidget {
         ),
         border: InputBorder.none,
         suffixIcon: controller.text.isNotEmpty
-            ? GestureDetector(
-                onTap: onClear,
-                child: Icon(
+            ? IconButton(
+                tooltip: l10n.clearSearch,
+                onPressed: onClear,
+                icon: Icon(
                   Icons.clear,
                   color: palette.white,
                   size: AppIconSize.m,
                 ),
               )
             : null,
-        suffixIconConstraints: const BoxConstraints(
-          minWidth: 24,
-          minHeight: 24,
-        ),
       ),
     );
   }

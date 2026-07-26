@@ -73,7 +73,7 @@ class SettingsScreen extends StatelessWidget {
 
                   // Glass Card for Language Selection
                   GlassSurface(
-                    blur: 20,
+                    blur: 10,
                     opacity: 0.12,
                     tintColor: palette.white,
                     borderOpacity: 0.15,
@@ -124,12 +124,52 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.xxl),
+                  const _WeatherDataNotice(),
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _WeatherDataNotice extends StatelessWidget {
+  const _WeatherDataNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = Theme.of(context).colorPalette;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Semantics(
+      container: true,
+      child: GlassSurface(
+        blur: 10,
+        opacity: 0.12,
+        tintColor: palette.white,
+        borderOpacity: 0.15,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(AppBorderRadius.l),
+        ),
+        padding: const EdgeInsets.all(AppSpacing.l),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            UiText.baseSemibold(
+              l10n.weatherDataAttribution,
+              color: palette.white,
+            ),
+            const SizedBox(height: AppSpacing.s),
+            UiText.smallRegular(
+              l10n.weatherDataDisclaimer,
+              color: palette.white.withValues(alpha: 0.75),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
