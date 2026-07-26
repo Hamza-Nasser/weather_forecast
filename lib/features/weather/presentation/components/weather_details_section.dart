@@ -105,10 +105,30 @@ class WeatherDetailsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            WeatherStatItem(value: feelsLike, label: l10n.realFeel),
-            WeatherStatItem(value: humidity, label: l10n.humidityLabel),
-            WeatherStatItem(value: windForce, label: l10n.windForce),
-            WeatherStatItem(value: pressure, label: l10n.pressure),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: WeatherStatItem(value: feelsLike, label: l10n.realFeel),
+              ),
+            ),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: WeatherStatItem(value: humidity, label: l10n.humidityLabel),
+              ),
+            ),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: WeatherStatItem(value: windForce, label: l10n.windForce),
+              ),
+            ),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: WeatherStatItem(value: pressure, label: l10n.pressure),
+              ),
+            ),
           ],
         ),
       ],

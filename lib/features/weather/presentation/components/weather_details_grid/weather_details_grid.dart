@@ -59,8 +59,8 @@ class WeatherDetailsGrid extends StatelessWidget {
     final textScale = MediaQuery.textScalerOf(
       context,
     ).scale(1).clamp(1, 1.5).toDouble();
-    final compactHeight = 165 * textScale;
-    final tallHeight = 175 * textScale;
+    final compactHeight = 190 * textScale;
+    final tallHeight = 200 * textScale;
     final unsafe = WeatherConditionClassifier.isUnsafeForOutdoorActivities(
       conditionCode,
     );
