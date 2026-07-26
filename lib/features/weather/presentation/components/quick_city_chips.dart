@@ -36,31 +36,42 @@ class QuickCityChips extends StatelessWidget {
               selectedCity.toLowerCase() == city.query.toLowerCase();
           return Padding(
             padding: const EdgeInsets.only(right: AppSpacing.s),
-            child: GestureDetector(
-              onTap: () => onSelected(city.query),
-              child: AnimatedContainer(
-                duration: AppDuration.fast,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.l,
-                  vertical: AppSpacing.s,
-                ),
-                decoration: BoxDecoration(
+            child: Semantics(
+              button: true,
+              selected: isSelected,
+              label: city.displayName,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => onSelected(city.query),
                   borderRadius: AppBorderRadius.circularM,
-                  color: isSelected
-                      ? palette.white.withValues(alpha: 0.2)
-                      : palette.white.withValues(alpha: 0.05),
-                  border: Border.all(
-                    color: isSelected
-                        ? palette.white.withValues(alpha: 0.4)
-                        : palette.white.withValues(alpha: 0.1),
-                    width: 1,
+                  child: AnimatedContainer(
+                    duration: AppDuration.fast,
+                    constraints: const BoxConstraints(minHeight: 48),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.l,
+                      vertical: AppSpacing.s,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: AppBorderRadius.circularM,
+                      color: isSelected
+                          ? palette.white.withValues(alpha: 0.2)
+                          : palette.white.withValues(alpha: 0.05),
+                      border: Border.all(
+                        color: isSelected
+                            ? palette.white.withValues(alpha: 0.4)
+                            : palette.white.withValues(alpha: 0.1),
+                        width: 1,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: UiText.smallMedium(
+                      city.displayName,
+                      color: isSelected
+                          ? palette.white
+                          : palette.white.withValues(alpha: 0.6),
+                    ),
                   ),
-                ),
-                child: UiText.smallMedium(
-                  city.displayName,
-                  color: isSelected
-                      ? palette.white
-                      : palette.white.withValues(alpha: 0.6),
                 ),
               ),
             ),

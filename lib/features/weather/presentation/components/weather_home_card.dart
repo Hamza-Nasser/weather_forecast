@@ -54,7 +54,7 @@ class WeatherHomeCard extends StatelessWidget {
     final palette = Theme.of(context).colorPalette;
 
     return GlassSurface(
-      blur: 20,
+      blur: 10,
       opacity: 0.12,
       tintColor: palette.white,
       borderOpacity: 0.15,
@@ -86,13 +86,12 @@ class WeatherHomeCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xxl),
 
-          // Hourly forecast row
-          _HourlyForecastRow(items: hourlyForecast),
-          const SizedBox(height: AppSpacing.l),
-
-          // Divider
-          Divider(color: palette.dark03, height: 1),
-          const SizedBox(height: AppSpacing.l),
+          if (hourlyForecast.isNotEmpty) ...[
+            _HourlyForecastRow(items: hourlyForecast),
+            const SizedBox(height: AppSpacing.l),
+            Divider(color: palette.dark03, height: 1),
+            const SizedBox(height: AppSpacing.l),
+          ],
 
           // Details section
           WeatherDetailsSection(
@@ -121,31 +120,34 @@ class _TemperatureDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = Theme.of(context).colorPalette;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        if (iconUrl != null) ...[
-          UiNetworkImage(
-            url: iconUrl!.startsWith('http') ? iconUrl! : 'https:$iconUrl',
-            width: 64,
-            height: 64,
-            fit: BoxFit.contain,
-            borderRadius: BorderRadius.zero,
-            errorWidget: const SizedBox.shrink(),
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          if (iconUrl != null) ...[
+            UiNetworkImage(
+              url: iconUrl!.startsWith('http') ? iconUrl! : 'https:$iconUrl',
+              width: 64,
+              height: 64,
+              fit: BoxFit.contain,
+              borderRadius: BorderRadius.zero,
+              errorWidget: const SizedBox.shrink(),
+            ),
+            const SizedBox(width: AppSpacing.s),
+          ],
+          UiText.headlineRegular(
+            temperature,
+            color: palette.white,
+            style: const TextStyle(fontSize: 72, height: 1.0),
           ),
-          const SizedBox(width: AppSpacing.s),
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: UiText.headlineRegular('°C', color: palette.white),
+          ),
         ],
-        UiText.headlineRegular(
-          temperature,
-          color: palette.white,
-          style: const TextStyle(fontSize: 72, height: 1.0),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: UiText.headlineRegular('°C', color: palette.white),
-        ),
-      ],
+      ),
     );
   }
 }

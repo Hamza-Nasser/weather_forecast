@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:weather_app/configurations/ui/dimensions/app_dimensions.dart';
 import 'package:weather_app/configurations/ui/theme/theme_data.dart';
@@ -112,27 +111,20 @@ class MoonPainter extends CustomPainter {
       craterPaint,
     );
 
-    // Draw shadow for the moon phase
+    // Draw a moving shadow clipped to the moon disc.
     final shadowPaint = Paint()
       ..color = shadowColor.withValues(alpha: 0.85)
       ..style = PaintingStyle.fill;
-
-    final shadowPath = Path();
-    shadowPath.moveTo(center.dx, center.dy - radius);
-    shadowPath.arcTo(
-      Rect.fromCircle(center: center, radius: radius),
-      -math.pi / 2,
-      -math.pi,
-      false,
+    final normalized = progress.clamp(0.0, 1.0);
+    final shadowCenterX = normalized <= 0.5
+        ? center.dx - (4 * radius * normalized)
+        : center.dx + (4 * radius * (1 - normalized));
+    canvas.save();
+    canvas.clipPath(
+      Path()..addOval(Rect.fromCircle(center: center, radius: radius)),
     );
-    shadowPath.quadraticBezierTo(
-      center.dx - radius * 0.4,
-      center.dy,
-      center.dx,
-      center.dy - radius,
-    );
-    shadowPath.close();
-    canvas.drawPath(shadowPath, shadowPaint);
+    canvas.drawCircle(Offset(shadowCenterX, center.dy), radius, shadowPaint);
+    canvas.restore();
   }
 
   @override

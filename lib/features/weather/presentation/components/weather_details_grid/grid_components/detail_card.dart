@@ -24,7 +24,7 @@ class DetailCard extends StatelessWidget {
     final palette = Theme.of(context).colorPalette;
 
     return GlassSurface(
-      blur: 20,
+      blur: 10,
       opacity: 0.12,
       tintColor: palette.white,
       borderOpacity: 0.15,
@@ -46,9 +46,15 @@ class DetailCard extends StatelessWidget {
                 size: AppIconSize.s,
               ),
               const SizedBox(width: AppSpacing.xs),
-              UiText.captionBold(
-                title.toUpperCase(),
-                color: palette.white.withValues(alpha: 0.5),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: UiText.captionBold(
+                    title.toUpperCase(),
+                    color: palette.white.withValues(alpha: 0.5),
+                  ),
+                ),
               ),
             ],
           ),

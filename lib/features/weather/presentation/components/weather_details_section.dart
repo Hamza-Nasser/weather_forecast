@@ -103,7 +103,7 @@ class WeatherDetailsSection extends StatelessWidget {
 
         // Stats row
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             WeatherStatItem(value: feelsLike, label: l10n.realFeel),
             WeatherStatItem(value: humidity, label: l10n.humidityLabel),
