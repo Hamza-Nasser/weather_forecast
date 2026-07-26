@@ -24,8 +24,6 @@ class CacheClientImpl implements CacheClient {
     // 2. Try Disk
     final diskValue = await _diskCache.get(key);
     if (diskValue != null) {
-      // Warm up memory cache
-      await _memoryCache.put(key, diskValue);
       return diskValue;
     }
 

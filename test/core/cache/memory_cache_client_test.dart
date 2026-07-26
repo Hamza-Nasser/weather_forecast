@@ -58,21 +58,13 @@ void main() {
     });
 
     test('expired entries return null from get', () async {
-      await cache.put(
-        'key1',
-        'data',
-        ttl: const Duration(milliseconds: 1),
-      );
+      await cache.put('key1', 'data', ttl: const Duration(milliseconds: 1));
       await Future.delayed(const Duration(milliseconds: 10));
       expect(await cache.get('key1'), isNull);
     });
 
     test('containsKey returns false for expired entries', () async {
-      await cache.put(
-        'key1',
-        'data',
-        ttl: const Duration(milliseconds: 1),
-      );
+      await cache.put('key1', 'data', ttl: const Duration(milliseconds: 1));
       await Future.delayed(const Duration(milliseconds: 10));
       expect(await cache.containsKey('key1'), isFalse);
     });
@@ -118,8 +110,8 @@ void main() {
         // get returns null for expired entries
         expect(await cache.get('key1'), isNull);
 
-        // But we removed it in the get call above, so getStale will also be null.
-        // Let's test without calling get first.
+        // Fresh reads must not destroy the value needed by offline fallback.
+        expect(await cache.getStale('key1'), 'stale_data');
       });
 
       test('returns expired data without prior get call', () async {

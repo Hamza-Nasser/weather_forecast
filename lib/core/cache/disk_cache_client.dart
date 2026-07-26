@@ -64,8 +64,6 @@ class DiskCacheClient implements CacheClient {
     );
 
     if (results.isEmpty) {
-      // Clean up expired entry if it exists
-      await db.delete(_tableName, where: 'key = ?', whereArgs: [key]);
       return null;
     }
 
@@ -137,7 +135,15 @@ class DiskCacheClient implements CacheClient {
   @override
   Future<void> removeMatching(String prefix) async {
     final db = await _db;
-    await db.delete(_tableName, where: 'key LIKE ?', whereArgs: ['$prefix%']);
+    final escapedPrefix = prefix
+        .replaceAll('!', '!!')
+        .replaceAll('%', '!%')
+        .replaceAll('_', '!_');
+    await db.delete(
+      _tableName,
+      where: "key LIKE ? ESCAPE '!'",
+      whereArgs: ['$escapedPrefix%'],
+    );
   }
 
   /// Removes all expired entries from the database.

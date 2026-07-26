@@ -23,7 +23,9 @@ void main() {
 
     group('get', () {
       test('returns memory-cached value when available', () async {
-        when(() => mockMemory.get('key')).thenAnswer((_) async => 'from_memory');
+        when(
+          () => mockMemory.get('key'),
+        ).thenAnswer((_) async => 'from_memory');
 
         final result = await sut.get('key');
 
@@ -34,13 +36,10 @@ void main() {
       test('falls back to disk when memory misses', () async {
         when(() => mockMemory.get('key')).thenAnswer((_) async => null);
         when(() => mockDisk.get('key')).thenAnswer((_) async => 'from_disk');
-        when(() => mockMemory.put('key', 'from_disk'))
-            .thenAnswer((_) async {});
-
         final result = await sut.get('key');
 
         expect(result, 'from_disk');
-        verify(() => mockMemory.put('key', 'from_disk')).called(1);
+        verifyNever(() => mockMemory.put(any(), any()));
       });
 
       test('returns null when both memory and disk miss', () async {
@@ -55,8 +54,9 @@ void main() {
 
     group('getStale', () {
       test('returns memory stale value when available', () async {
-        when(() => mockMemory.getStale('key'))
-            .thenAnswer((_) async => 'stale_memory');
+        when(
+          () => mockMemory.getStale('key'),
+        ).thenAnswer((_) async => 'stale_memory');
 
         final result = await sut.getStale('key');
 
@@ -66,8 +66,9 @@ void main() {
 
       test('falls back to disk stale when memory has nothing', () async {
         when(() => mockMemory.getStale('key')).thenAnswer((_) async => null);
-        when(() => mockDisk.getStale('key'))
-            .thenAnswer((_) async => 'stale_disk');
+        when(
+          () => mockDisk.getStale('key'),
+        ).thenAnswer((_) async => 'stale_disk');
 
         final result = await sut.getStale('key');
 
@@ -86,8 +87,7 @@ void main() {
 
     group('put', () {
       test('writes to both memory and disk', () async {
-        when(() => mockMemory.put('key', 'value'))
-            .thenAnswer((_) async {});
+        when(() => mockMemory.put('key', 'value')).thenAnswer((_) async {});
         when(() => mockDisk.put('key', 'value')).thenAnswer((_) async {});
 
         await sut.put('key', 'value');
@@ -98,10 +98,12 @@ void main() {
 
       test('passes custom ttl to both caches', () async {
         const ttl = Duration(minutes: 5);
-        when(() => mockMemory.put('key', 'value', ttl: ttl))
-            .thenAnswer((_) async {});
-        when(() => mockDisk.put('key', 'value', ttl: ttl))
-            .thenAnswer((_) async {});
+        when(
+          () => mockMemory.put('key', 'value', ttl: ttl),
+        ).thenAnswer((_) async {});
+        when(
+          () => mockDisk.put('key', 'value', ttl: ttl),
+        ).thenAnswer((_) async {});
 
         await sut.put('key', 'value', ttl: ttl);
 
@@ -136,26 +138,26 @@ void main() {
 
     group('containsKey', () {
       test('returns true if memory contains key', () async {
-        when(() => mockMemory.containsKey('key'))
-            .thenAnswer((_) async => true);
+        when(() => mockMemory.containsKey('key')).thenAnswer((_) async => true);
 
         expect(await sut.containsKey('key'), isTrue);
         verifyNever(() => mockDisk.containsKey(any()));
       });
 
       test('falls back to disk when memory misses', () async {
-        when(() => mockMemory.containsKey('key'))
-            .thenAnswer((_) async => false);
+        when(
+          () => mockMemory.containsKey('key'),
+        ).thenAnswer((_) async => false);
         when(() => mockDisk.containsKey('key')).thenAnswer((_) async => true);
 
         expect(await sut.containsKey('key'), isTrue);
       });
 
       test('returns false when neither contains key', () async {
-        when(() => mockMemory.containsKey('key'))
-            .thenAnswer((_) async => false);
-        when(() => mockDisk.containsKey('key'))
-            .thenAnswer((_) async => false);
+        when(
+          () => mockMemory.containsKey('key'),
+        ).thenAnswer((_) async => false);
+        when(() => mockDisk.containsKey('key')).thenAnswer((_) async => false);
 
         expect(await sut.containsKey('key'), isFalse);
       });
@@ -163,10 +165,10 @@ void main() {
 
     group('removeMatching', () {
       test('delegates to both memory and disk', () async {
-        when(() => mockMemory.removeMatching('prefix_'))
-            .thenAnswer((_) async {});
-        when(() => mockDisk.removeMatching('prefix_'))
-            .thenAnswer((_) async {});
+        when(
+          () => mockMemory.removeMatching('prefix_'),
+        ).thenAnswer((_) async {});
+        when(() => mockDisk.removeMatching('prefix_')).thenAnswer((_) async {});
 
         await sut.removeMatching('prefix_');
 

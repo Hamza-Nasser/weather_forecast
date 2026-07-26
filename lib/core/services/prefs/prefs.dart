@@ -5,11 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Keys for shared preferences storage.
 ///
 /// Add new preference keys here as features require them.
-enum PrefsKey {
-  locale,
-  temperatureUnit,
-  lastCity,
-}
+enum PrefsKey { locale, lastCity }
 
 /// Utility wrapper around [SharedPreferences].
 ///

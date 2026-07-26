@@ -12,12 +12,6 @@ abstract class AppPreferences {
   /// Saves the locale language code.
   Future<bool> setLocale(String locale);
 
-  /// Gets the preferred temperature unit (e.g., 'celsius', 'fahrenheit').
-  String getTemperatureUnit();
-
-  /// Saves the preferred temperature unit.
-  Future<bool> setTemperatureUnit(String unit);
-
   /// Gets the last searched city.
   String getLastCity();
 
@@ -37,16 +31,6 @@ class AppPreferencesImpl implements AppPreferences {
   @override
   Future<bool> setLocale(String locale) {
     return PreferenceUtils.setString(PrefsKey.locale, locale);
-  }
-
-  @override
-  String getTemperatureUnit() {
-    return PreferenceUtils.getString(PrefsKey.temperatureUnit, 'celsius');
-  }
-
-  @override
-  Future<bool> setTemperatureUnit(String unit) {
-    return PreferenceUtils.setString(PrefsKey.temperatureUnit, unit);
   }
 
   @override

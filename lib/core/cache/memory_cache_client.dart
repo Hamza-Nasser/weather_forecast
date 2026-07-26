@@ -6,7 +6,7 @@ import 'package:weather_app/core/cache/cache_entry.dart';
 /// In-memory cache implementation using a [Map].
 ///
 /// Suitable for short-lived data that should not survive app restarts.
-/// Automatically evicts expired entries and respects [CacheConfig.maxMemoryEntries].
+/// Preserves expired entries for explicit stale-data fallback.
 @singleton
 class MemoryCacheClient implements CacheClient {
   final CacheConfig _config;
@@ -20,7 +20,6 @@ class MemoryCacheClient implements CacheClient {
     if (entry == null) return null;
 
     if (entry.isExpired) {
-      _store.remove(key);
       return null;
     }
 
@@ -65,7 +64,6 @@ class MemoryCacheClient implements CacheClient {
     if (entry == null) return false;
 
     if (entry.isExpired) {
-      _store.remove(key);
       return false;
     }
 
