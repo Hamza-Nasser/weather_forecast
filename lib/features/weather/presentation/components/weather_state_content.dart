@@ -206,7 +206,7 @@ class _WeatherForecastMapper {
               : '${dateTime.hour.toString().padLeft(2, '0')}:00';
           final visual = WeatherVisuals.conditionIcon(
             hour.conditionCode,
-            isDay: hour.isDay != 0,
+            isDay: hour.isDay,
           );
           return HourlyForecastData(
             time: time,

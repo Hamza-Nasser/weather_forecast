@@ -12,7 +12,10 @@ void main() {
       },
       'current': {
         'temp_c': 35.0,
-        'condition': {'text': 'Sunny', 'icon': '//cdn.weatherapi.com/sunny.png'},
+        'condition': {
+          'text': 'Sunny',
+          'icon': '//cdn.weatherapi.com/sunny.png',
+        },
         'humidity': 20,
         'wind_kph': 15.0,
         'feelslike_c': 38.0,
@@ -130,7 +133,7 @@ void main() {
         expect(entity.hourlyForecast, hasLength(1));
         expect(entity.hourlyForecast.first.tempC, 36.0);
         expect(entity.hourlyForecast.first.condition, 'Sunny');
-        expect(entity.hourlyForecast.first.isDay, 1);
+        expect(entity.hourlyForecast.first.isDay, isTrue);
       });
 
       test('maps daily forecast correctly', () {
@@ -216,14 +219,14 @@ void main() {
         tempC: 36.0,
         condition: 'Sunny',
         iconUrl: 'https://icon.png',
-        isDay: 1,
+        isDay: true,
       );
       const hour2 = WeatherHourEntity(
         time: '2026-07-25 14:00',
         tempC: 36.0,
         condition: 'Sunny',
         iconUrl: 'https://icon.png',
-        isDay: 1,
+        isDay: true,
       );
 
       expect(hour1, equals(hour2));

@@ -66,7 +66,7 @@ class WeatherModel {
                   condition: hour.condition.text,
                   conditionCode: hour.condition.code,
                   iconUrl: _normalizeIcon(hour.condition.icon),
-                  isDay: hour.isDay,
+                  isDay: hour.isDay != 0,
                 ),
               )
               .toList(growable: false) ??

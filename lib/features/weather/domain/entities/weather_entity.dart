@@ -104,7 +104,7 @@ class WeatherHourEntity extends Equatable {
   final String condition;
   final int conditionCode;
   final String iconUrl;
-  final int isDay;
+  final bool isDay;
 
   @override
   List<Object?> get props => [
