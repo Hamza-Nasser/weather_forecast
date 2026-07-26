@@ -71,11 +71,14 @@ class WeatherDetailsSection extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.wb_sunny_outlined,
-                      color: palette.dark04,
+                      color: palette.white.withValues(alpha: 0.8),
                       size: AppIconSize.m,
                     ),
                     const SizedBox(height: 2),
-                    UiText.captionRegular(sunrise, color: palette.dark04),
+                    UiText.captionRegular(
+                      sunrise,
+                      color: palette.white.withValues(alpha: 0.8),
+                    ),
                   ],
                 ),
               ),
@@ -88,11 +91,14 @@ class WeatherDetailsSection extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.wb_twilight_outlined,
-                      color: palette.dark04,
+                      color: palette.white.withValues(alpha: 0.8),
                       size: AppIconSize.m,
                     ),
                     const SizedBox(height: 2),
-                    UiText.captionRegular(sunset, color: palette.dark04),
+                    UiText.captionRegular(
+                      sunset,
+                      color: palette.white.withValues(alpha: 0.8),
+                    ),
                   ],
                 ),
               ),
@@ -114,7 +120,10 @@ class WeatherDetailsSection extends StatelessWidget {
             Expanded(
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: WeatherStatItem(value: humidity, label: l10n.humidityLabel),
+                child: WeatherStatItem(
+                  value: humidity,
+                  label: l10n.humidityLabel,
+                ),
               ),
             ),
             Expanded(
