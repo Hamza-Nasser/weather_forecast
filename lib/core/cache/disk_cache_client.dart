@@ -103,6 +103,7 @@ class DiskCacheClient implements CacheClient {
       entry.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    await evictExpired();
   }
 
   @override

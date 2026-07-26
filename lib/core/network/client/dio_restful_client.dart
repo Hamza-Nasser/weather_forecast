@@ -4,7 +4,6 @@ import 'package:dio/dio.dart' hide ProgressCallback;
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:weather_app/core/network/client/endpoints.dart';
-import 'package:weather_app/core/network/client/interceptors/error_interceptor.dart';
 import 'package:weather_app/core/network/client/interceptors/language_interceptor.dart';
 import 'package:weather_app/core/network/client/interceptors/retry_interceptor.dart';
 import 'package:weather_app/core/network/client/interceptors/safe_log_interceptor.dart';
@@ -25,7 +24,6 @@ class DioRestfulClient implements RestfulClient {
       LanguageInterceptor(prefs),
       const SafeLogInterceptor(),
       RetryInterceptor(_client),
-      ErrorInterceptor(),
     ]);
   }
 
