@@ -71,6 +71,40 @@ void main() {
       expect(result.current.condition.text, 'Sunny');
     });
 
+    test('maps WeatherAPI error code 1006 to CityNotFoundException', () async {
+      when(
+        () => mockClient.get(
+          Endpoints.forecast,
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenThrow(const BadRequestException(null, 1006));
+
+      expect(
+        () => sut.getCurrentWeather('Unknown City'),
+        throwsA(isA<CityNotFoundException>()),
+      );
+    });
+
+    test('preserves unrelated bad-request errors', () async {
+      when(
+        () => mockClient.get(
+          Endpoints.forecast,
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenThrow(const BadRequestException(null, 2008));
+
+      expect(
+        () => sut.getCurrentWeather('Cairo'),
+        throwsA(
+          isA<BadRequestException>().having(
+            (error) => error.errorCode,
+            'errorCode',
+            2008,
+          ),
+        ),
+      );
+    });
+
     test('handles non-generic Map response', () async {
       // API might return Map<dynamic, dynamic> instead of Map<String, dynamic>
       when(

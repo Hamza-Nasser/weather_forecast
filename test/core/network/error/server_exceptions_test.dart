@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weather_app/core/network/error/server_exceptions.dart';
+import 'package:weather_app/l10n/app_localizations_ar.dart';
+import 'package:weather_app/l10n/app_localizations_en.dart';
 
 void main() {
   group('ServerException', () {
@@ -46,6 +48,27 @@ void main() {
       expect(
         exception.message,
         'Bad Request, Please Check Your Request and Try Again',
+      );
+    });
+
+    test('retains the provider error code', () {
+      const exception = BadRequestException(null, 1006);
+
+      expect(exception.errorCode, 1006);
+    });
+  });
+
+  group('CityNotFoundException', () {
+    test('provides dedicated English and Arabic messages', () {
+      const exception = CityNotFoundException();
+
+      expect(
+        exception.getLocalizedMessage(AppLocalizationsEn()),
+        'City not found. Check the city name and try again.',
+      );
+      expect(
+        exception.getLocalizedMessage(AppLocalizationsAr()),
+        'لم يتم العثور على المدينة. تحقق من اسم المدينة وحاول مرة أخرى.',
       );
     });
   });
@@ -115,6 +138,7 @@ void main() {
     test('all exceptions extend ServerException', () {
       expect(const FetchDataException(), isA<ServerException>());
       expect(const BadRequestException(), isA<ServerException>());
+      expect(const CityNotFoundException(), isA<ServerException>());
       expect(const UnauthorizedException(), isA<ServerException>());
       expect(const NotFoundException(), isA<ServerException>());
       expect(const ConflictException(), isA<ServerException>());

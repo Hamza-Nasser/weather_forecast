@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Bad request, please check your request and try again'**
   String get errorBadRequest;
 
+  /// Error message when WeatherAPI cannot find the requested city
+  ///
+  /// In en, this message translates to:
+  /// **'City not found. Check the city name and try again.'**
+  String get errorCityNotFound;
+
   /// Error message for unauthorized access
   ///
   /// In en, this message translates to:

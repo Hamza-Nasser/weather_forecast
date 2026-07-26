@@ -5,6 +5,7 @@
   "errorNoInternetConnection": "لا يوجد اتصال بالإنترنت",
   "errorFetchData": "خطأ أثناء الاتصال",
   "errorBadRequest": "طلب غير صالح، يرجى التحقق من طلبك وإعادة المحاولة",
+  "errorCityNotFound": "لم يتم العثور على المدينة. تحقق من اسم المدينة وحاول مرة أخرى.",
   "errorUnauthorized": "غير مصرح به",
   "errorConflict": "حدث تعارض",
   "errorInternalServer": "خطأ داخلي في الخادم",

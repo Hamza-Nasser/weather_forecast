@@ -27,12 +27,30 @@ class FetchDataException extends ServerException {
 }
 
 class BadRequestException extends ServerException {
-  const BadRequestException([String? message])
+  const BadRequestException([String? message, this.errorCode])
     : super(message ?? "Bad Request, Please Check Your Request and Try Again");
+
+  /// Stable provider error code, when the response contains one.
+  ///
+  /// Feature data sources can use this code to translate a generic HTTP 400
+  /// into a more specific application exception without exposing backend text.
+  final int? errorCode;
 
   @override
   String getLocalizedMessage(AppLocalizations l10n) {
     return l10n.errorBadRequest;
+  }
+
+  @override
+  List<Object?> get props => [message, errorCode];
+}
+
+class CityNotFoundException extends ServerException {
+  const CityNotFoundException() : super('City not found');
+
+  @override
+  String getLocalizedMessage(AppLocalizations l10n) {
+    return l10n.errorCityNotFound;
   }
 }
 

@@ -20,6 +20,10 @@
   "@errorBadRequest": {
     "description": "Error message for bad requests"
   },
+  "errorCityNotFound": "City not found. Check the city name and try again.",
+  "@errorCityNotFound": {
+    "description": "Error message when WeatherAPI cannot find the requested city"
+  },
   "errorUnauthorized": "Unauthorized",
   "@errorUnauthorized": {
     "description": "Error message for unauthorized access"

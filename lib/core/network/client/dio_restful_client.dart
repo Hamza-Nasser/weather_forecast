@@ -149,7 +149,10 @@ class DioRestfulClient implements RestfulClient {
 
     switch (error.response?.statusCode) {
       case StatusCode.badRequest:
-        throw const BadRequestException();
+        throw BadRequestException(
+          null,
+          _extractErrorCode(error.response?.data),
+        );
       case StatusCode.unauthorized:
       case StatusCode.forbidden:
         throw const UnauthorizedException();
@@ -167,5 +170,16 @@ class DioRestfulClient implements RestfulClient {
       default:
         throw const CustomException();
     }
+  }
+
+  int? _extractErrorCode(Object? responseData) {
+    if (responseData is! Map) return null;
+    final error = responseData['error'];
+    if (error is! Map) return null;
+    final code = error['code'];
+    if (code is int) return code;
+    if (code is num) return code.toInt();
+    if (code is String) return int.tryParse(code);
+    return null;
   }
 }

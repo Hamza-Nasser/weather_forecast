@@ -25,6 +25,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'طلب غير صالح، يرجى التحقق من طلبك وإعادة المحاولة';
 
   @override
+  String get errorCityNotFound =>
+      'لم يتم العثور على المدينة. تحقق من اسم المدينة وحاول مرة أخرى.';
+
+  @override
   String get errorUnauthorized => 'غير مصرح به';
 
   @override

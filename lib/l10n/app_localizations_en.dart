@@ -25,6 +25,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Bad request, please check your request and try again';
 
   @override
+  String get errorCityNotFound =>
+      'City not found. Check the city name and try again.';
+
+  @override
   String get errorUnauthorized => 'Unauthorized';
 
   @override

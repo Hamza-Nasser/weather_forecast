@@ -9,6 +9,8 @@ import 'package:weather_app/features/weather/data/sources/weather_remote_source.
 /// Implementation of [WeatherRemoteSource] fetching data from Weather API.
 @Injectable(as: WeatherRemoteSource)
 class WeatherRemoteSourceImpl implements WeatherRemoteSource {
+  static const int _cityNotFoundErrorCode = 1006;
+
   final RestfulClient _client;
   final String _apiKey;
 
@@ -23,17 +25,24 @@ class WeatherRemoteSourceImpl implements WeatherRemoteSource {
     if (_apiKey.trim().isEmpty) {
       throw const ConfigurationException();
     }
-    final response = await _client.get(
-      Endpoints.forecast,
-      queryParameters: {'key': _apiKey, 'q': city, 'days': 7},
-    );
+    try {
+      final response = await _client.get(
+        Endpoints.forecast,
+        queryParameters: {'key': _apiKey, 'q': city, 'days': 7},
+      );
 
-    if (response is Map<String, dynamic>) {
-      return WeatherModel.fromJson(response);
-    } else if (response is Map) {
-      return WeatherModel.fromJson(Map<String, dynamic>.from(response));
+      if (response is Map<String, dynamic>) {
+        return WeatherModel.fromJson(response);
+      } else if (response is Map) {
+        return WeatherModel.fromJson(Map<String, dynamic>.from(response));
+      }
+
+      throw const FetchDataException();
+    } on BadRequestException catch (error) {
+      if (error.errorCode == _cityNotFoundErrorCode) {
+        throw const CityNotFoundException();
+      }
+      rethrow;
     }
-
-    throw const FetchDataException();
   }
 }

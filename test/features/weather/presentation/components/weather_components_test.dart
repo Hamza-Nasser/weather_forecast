@@ -2,6 +2,7 @@ import 'dart:ui' show Tristate;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:weather_app/core/network/error/server_exceptions.dart';
 import 'package:weather_app/features/weather/domain/entities/weather_entity.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_state.dart';
 import 'package:weather_app/features/weather/presentation/components/hourly_forecast_item.dart';
@@ -345,6 +346,57 @@ void main() {
       expect(find.byType(ErrorState), findsOneWidget);
       await tester.tap(find.text('Retry'));
       expect(retried, isTrue);
+    });
+
+    testWidgets('renders the dedicated city-not-found message in English', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        WidgetTestApp(
+          child: Scaffold(
+            body: WeatherStateContent(
+              state: const WeatherState(
+                status: WeatherStatus.failure,
+                error: CityNotFoundException(),
+              ),
+              blobColors: blobs,
+              onRetry: _noop,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.text('City not found. Check the city name and try again.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('renders the dedicated city-not-found message in Arabic', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        WidgetTestApp(
+          locale: const Locale('ar'),
+          child: Scaffold(
+            body: WeatherStateContent(
+              state: const WeatherState(
+                status: WeatherStatus.failure,
+                error: CityNotFoundException(),
+              ),
+              blobColors: blobs,
+              onRetry: _noop,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        find.text(
+          'لم يتم العثور على المدينة. تحقق من اسم المدينة وحاول مرة أخرى.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders success content with API forecast values', (
