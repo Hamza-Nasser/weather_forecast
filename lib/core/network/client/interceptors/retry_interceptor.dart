@@ -4,71 +4,49 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 class RetryInterceptor extends Interceptor {
-  final Dio dio;
-  final int maxRetries;
-  final int retryDelayInMillis;
-
   RetryInterceptor(
     this.dio, {
     this.maxRetries = 3,
-    this.retryDelayInMillis = 1000,
+    this.retryDelay = const Duration(milliseconds: 500),
   });
 
-  @override
-  Future<void> onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
-    if (options.extra["isRetry"] == null) {
-      options.extra["retries"] = 0;
-    }
-    handler.next(options);
-  }
+  final Dio dio;
+  final int maxRetries;
+  final Duration retryDelay;
 
   @override
   Future<void> onError(
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    err.requestOptions.extra["retries"] ??= 0;
-    if (_shouldRetry(err) &&
-        err.requestOptions.extra["retries"] < maxRetries) {
-      err.requestOptions.extra["retries"] += 1;
-
-      // Add "isRetry" flag to differentiate retry from original request
-      err.requestOptions.extra["isRetry"] = true;
-
-      // Delay before retrying (exponential backoff)
-      await Future.delayed(
-        Duration(
-          milliseconds:
-              retryDelayInMillis * err.requestOptions.extra["retries"] as int,
-        ),
-      );
-
-      try {
-        final response = await dio.request(
-          err.requestOptions.path,
-          options: Options(
-            method: err.requestOptions.method,
-            headers: err.requestOptions.headers,
-            extra: err.requestOptions.extra,
-          ),
-          data: err.requestOptions.data,
-          queryParameters: err.requestOptions.queryParameters,
-        );
-        return handler.resolve(response);
-      } catch (e) {
-        return handler.next(err);
-      }
+    final options = err.requestOptions;
+    final attempt = options.extra['retryAttempt'] as int? ?? 0;
+    if (!_isIdempotent(options.method) ||
+        !_isTransient(err) ||
+        attempt >= maxRetries) {
+      handler.next(err);
+      return;
     }
-    return handler.next(err);
+
+    options.extra['retryAttempt'] = attempt + 1;
+    await Future<void>.delayed(retryDelay * (1 << attempt));
+
+    try {
+      handler.resolve(await dio.fetch<dynamic>(options));
+    } on DioException catch (retryError) {
+      handler.next(retryError);
+    }
   }
 
-  bool _shouldRetry(DioException error) {
-    return (error.type == DioExceptionType.unknown &&
-            error.error is SocketException) ||
-        error.type == DioExceptionType.connectionTimeout ||
-        error.type == DioExceptionType.receiveTimeout;
-  }
+  bool _isIdempotent(String method) =>
+      method.toUpperCase() == 'GET' || method.toUpperCase() == 'HEAD';
+
+  bool _isTransient(DioException error) =>
+      (error.type == DioExceptionType.unknown &&
+          error.error is SocketException) ||
+      error.type == DioExceptionType.connectionError ||
+      error.type == DioExceptionType.connectionTimeout ||
+      error.type == DioExceptionType.receiveTimeout ||
+      error.response?.statusCode == 429 ||
+      (error.response?.statusCode ?? 0) >= 500;
 }

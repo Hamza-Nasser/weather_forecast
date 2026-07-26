@@ -95,6 +95,13 @@ class CustomException extends ServerException {
   }
 }
 
+class ConfigurationException extends ServerException {
+  const ConfigurationException();
+
+  @override
+  String getLocalizedMessage(AppLocalizations l10n) => l10n.errorMissingApiKey;
+}
+
 class NoInternetConnectionException extends ServerException {
   const NoInternetConnectionException([String? message])
     : super(message ?? "No Internet Connection");
