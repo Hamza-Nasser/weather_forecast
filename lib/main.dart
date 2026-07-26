@@ -6,21 +6,21 @@ import 'package:flutter/services.dart';
 import 'package:weather_app/app.dart';
 import 'package:weather_app/configurations/di/injector.dart';
 import 'package:weather_app/core/services/app_error_reporter.dart';
-import 'package:weather_app/core/services/prefs/prefs.dart';
+import 'package:weather_app/core/services/prefs/app_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await PreferenceUtils.init();
+  await configureDependencies();
 
-  if (PreferenceUtils.getString(PrefsKey.locale).isEmpty) {
+  final preferences = sl<AppPreferences>();
+  if (preferences.getLocale().isEmpty) {
     final platformLanguage = PlatformDispatcher.instance.locale.languageCode;
     final initialLanguage = {'en', 'ar'}.contains(platformLanguage)
         ? platformLanguage
         : 'en';
-    await PreferenceUtils.setString(PrefsKey.locale, initialLanguage);
+    await preferences.setLocale(initialLanguage);
   }
 
-  configureDependencies();
   final errorReporter = sl<AppErrorReporter>();
   FlutterError.onError = (details) {
     FlutterError.presentError(details);

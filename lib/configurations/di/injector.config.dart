@@ -11,6 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:weather_app/core/cache/cache_client.dart' as _i1006;
 import 'package:weather_app/core/cache/cache_client_impl.dart' as _i217;
 import 'package:weather_app/core/cache/cache_config.dart' as _i962;
@@ -38,22 +39,24 @@ import 'package:weather_app/features/weather/presentation/bloc/weather_bloc.dart
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
-  _i174.GetIt init({
+  Future<_i174.GetIt> init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
-  }) {
+  }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final preferencesModule = _$PreferencesModule();
+    await gh.factoryAsync<_i460.SharedPreferences>(
+      () => preferencesModule.createPreferences(),
+      preResolve: true,
+    );
     gh.singleton<_i962.CacheConfig>(
       () => const _i962.CacheConfig.defaultConfig(),
-    );
-    gh.lazySingleton<_i1060.AppPreferences>(
-      () => const _i1060.AppPreferencesImpl(),
     );
     gh.lazySingleton<_i123.AppErrorReporter>(
       () => const _i123.DeveloperLogErrorReporter(),
     );
-    gh.lazySingleton<_i727.RestfulClient>(
-      () => _i729.DioRestfulClient(gh<_i1060.AppPreferences>()),
+    gh.lazySingleton<_i1060.AppPreferences>(
+      () => _i1060.AppPreferencesImpl(gh<_i460.SharedPreferences>()),
     );
     gh.singleton<_i232.MemoryCacheClient>(
       () => _i232.MemoryCacheClient(gh<_i962.CacheConfig>()),
@@ -61,14 +64,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i230.DiskCacheClient>(
       () => _i230.DiskCacheClient(gh<_i962.CacheConfig>()),
     );
-    gh.factory<_i578.WeatherRemoteSource>(
-      () => _i834.WeatherRemoteSourceImpl(gh<_i727.RestfulClient>()),
-    );
     gh.lazySingleton<_i1006.CacheClient>(
       () => _i217.CacheClientImpl(
         gh<_i232.MemoryCacheClient>(),
         gh<_i230.DiskCacheClient>(),
       ),
+    );
+    gh.lazySingleton<_i727.RestfulClient>(
+      () => _i729.DioRestfulClient(gh<_i1060.AppPreferences>()),
+    );
+    gh.factory<_i578.WeatherRemoteSource>(
+      () => _i834.WeatherRemoteSourceImpl(gh<_i727.RestfulClient>()),
     );
     gh.factory<_i985.SettingsCubit>(
       () => _i985.SettingsCubit(
@@ -98,3 +104,5 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
+
+class _$PreferencesModule extends _i1060.PreferencesModule {}

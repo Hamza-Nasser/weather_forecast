@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:weather_app/core/services/prefs/prefs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service abstraction for persistent key-value preferences.
 ///
-/// Use this interface throughout the codebase instead of direct static
-/// calls to [PreferenceUtils] to ensure clean testing and injection.
+/// Use this interface throughout the codebase to keep storage injectable and
+/// testable.
 abstract class AppPreferences {
   /// Gets the currently saved locale language code (e.g., 'en', 'ar').
   String getLocale();
@@ -21,25 +21,37 @@ abstract class AppPreferences {
 
 @LazySingleton(as: AppPreferences)
 class AppPreferencesImpl implements AppPreferences {
-  const AppPreferencesImpl();
+  const AppPreferencesImpl(this._preferences);
+
+  static const String _localeKey = 'locale';
+  static const String _lastCityKey = 'lastCity';
+
+  final SharedPreferences _preferences;
 
   @override
   String getLocale() {
-    return PreferenceUtils.getString(PrefsKey.locale);
+    return _preferences.getString(_localeKey) ?? '';
   }
 
   @override
   Future<bool> setLocale(String locale) {
-    return PreferenceUtils.setString(PrefsKey.locale, locale);
+    return _preferences.setString(_localeKey, locale);
   }
 
   @override
   String getLastCity() {
-    return PreferenceUtils.getString(PrefsKey.lastCity);
+    return _preferences.getString(_lastCityKey) ?? '';
   }
 
   @override
   Future<bool> setLastCity(String city) {
-    return PreferenceUtils.setString(PrefsKey.lastCity, city);
+    return _preferences.setString(_lastCityKey, city);
   }
+}
+
+@module
+abstract class PreferencesModule {
+  @preResolve
+  Future<SharedPreferences> createPreferences() =>
+      SharedPreferences.getInstance();
 }
