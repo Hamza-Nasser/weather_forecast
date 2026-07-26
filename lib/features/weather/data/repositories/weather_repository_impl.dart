@@ -2,56 +2,84 @@ import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
 import 'package:weather_app/core/cache/cache_client.dart';
+import 'package:weather_app/core/services/app_error_reporter.dart';
+import 'package:weather_app/core/services/prefs/app_preferences.dart';
 import 'package:weather_app/features/weather/data/models/weather_model.dart';
 import 'package:weather_app/features/weather/data/sources/weather_remote_source.dart';
 import 'package:weather_app/features/weather/domain/entities/weather_entity.dart';
 import 'package:weather_app/features/weather/domain/repositories/weather_repository.dart';
 
-/// Implementation of [WeatherRepository] coordinating data sources.
-///
-/// Integrates a memory → disk → server caching lookup strategy.
-/// When offline, falls back to stale cached data so the app remains usable.
 @Injectable(as: WeatherRepository)
 class WeatherRepositoryImpl implements WeatherRepository {
+  const WeatherRepositoryImpl(
+    this._remoteSource,
+    this._cacheClient,
+    this._preferences,
+    this._errorReporter,
+  );
+
   final WeatherRemoteSource _remoteSource;
   final CacheClient _cacheClient;
-
-  const WeatherRepositoryImpl(this._remoteSource, this._cacheClient);
+  final AppPreferences _preferences;
+  final AppErrorReporter _errorReporter;
 
   @override
   Future<WeatherEntity> getCurrentWeather(
     String city, {
     bool forceRefresh = false,
   }) async {
-    final cacheKey = 'weather_current_${city.toLowerCase().trim()}';
+    final normalizedCity = city.toLowerCase().trim();
+    final locale = _preferences.getLocale().trim().toLowerCase();
+    final cacheKey =
+        'weather_current_${locale.isEmpty ? 'en' : locale}_$normalizedCity';
 
-    // 1. Check cache (unless forcing a refresh)
     if (!forceRefresh) {
-      final cachedData = await _cacheClient.get(cacheKey);
-      if (cachedData != null) {
-        final Map<String, dynamic> decoded = jsonDecode(cachedData);
-        return WeatherModel.fromJson(decoded).toEntity();
+      final cached = await _readCache(cacheKey, stale: false);
+      if (cached != null) {
+        return cached.toEntity(dataSource: WeatherDataSource.cache);
       }
     }
 
-    // 2. Fetch from server
     try {
-      final model = await _remoteSource.getCurrentWeather(city);
-
-      // Cache the raw model JSON for lossless reconstruction
-      await _cacheClient.put(cacheKey, jsonEncode(model.toJson()));
-
-      return model.toEntity();
-    } catch (e) {
-      // 3. Offline fallback — serve stale cached data if available
-      final staleData = await _cacheClient.getStale(cacheKey);
-      if (staleData != null) {
-        final Map<String, dynamic> decoded = jsonDecode(staleData);
-        return WeatherModel.fromJson(decoded).toEntity();
+      final model = await _remoteSource.getCurrentWeather(city.trim());
+      try {
+        await _cacheClient.put(cacheKey, jsonEncode(model.toJson()));
+      } catch (error, stackTrace) {
+        _report(error, stackTrace, 'Write weather cache');
       }
-
-      // No cached data at all — rethrow the original error
-      rethrow;
+      return model.toEntity();
+    } catch (remoteError, remoteStackTrace) {
+      final stale = await _readCache(cacheKey, stale: true);
+      if (stale != null) {
+        return stale.toEntity(dataSource: WeatherDataSource.staleCache);
+      }
+      Error.throwWithStackTrace(remoteError, remoteStackTrace);
     }
+  }
+
+  Future<WeatherModel?> _readCache(String key, {required bool stale}) async {
+    try {
+      final value = stale
+          ? await _cacheClient.getStale(key)
+          : await _cacheClient.get(key);
+      if (value == null) return null;
+      final decoded = jsonDecode(value);
+      if (decoded is! Map) {
+        throw const FormatException('Weather cache is not an object');
+      }
+      return WeatherModel.fromJson(Map<String, dynamic>.from(decoded));
+    } catch (error, stackTrace) {
+      _report(error, stackTrace, 'Read weather cache');
+      try {
+        await _cacheClient.remove(key);
+      } catch (removeError, removeStackTrace) {
+        _report(removeError, removeStackTrace, 'Remove invalid weather cache');
+      }
+      return null;
+    }
+  }
+
+  void _report(Object error, StackTrace stackTrace, String context) {
+    _errorReporter.record(error, stackTrace, context: context);
   }
 }

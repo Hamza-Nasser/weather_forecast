@@ -29,8 +29,11 @@ WeatherLocationModel _$WeatherLocationModelFromJson(
   Map<String, dynamic> json,
 ) => WeatherLocationModel(
   name: json['name'] as String,
-  region: json['region'] as String?,
-  country: json['country'] as String?,
+  region: json['region'] as String? ?? '',
+  country: json['country'] as String? ?? '',
+  tzId: json['tz_id'] as String? ?? '',
+  localtime: json['localtime'] as String? ?? '',
+  localtimeEpoch: (json['localtime_epoch'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$WeatherLocationModelToJson(
@@ -39,6 +42,9 @@ Map<String, dynamic> _$WeatherLocationModelToJson(
   'name': instance.name,
   'region': instance.region,
   'country': instance.country,
+  'tz_id': instance.tzId,
+  'localtime': instance.localtime,
+  'localtime_epoch': instance.localtimeEpoch,
 };
 
 WeatherCurrentModel _$WeatherCurrentModelFromJson(Map<String, dynamic> json) =>
@@ -53,6 +59,10 @@ WeatherCurrentModel _$WeatherCurrentModelFromJson(Map<String, dynamic> json) =>
       visKm: (json['vis_km'] as num).toDouble(),
       pressureMb: (json['pressure_mb'] as num).toDouble(),
       uv: (json['uv'] as num).toDouble(),
+      isDay: (json['is_day'] as num?)?.toInt() ?? 1,
+      windDegree: (json['wind_degree'] as num?)?.toInt() ?? 0,
+      windDir: json['wind_dir'] as String? ?? '',
+      lastUpdatedEpoch: (json['last_updated_epoch'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$WeatherCurrentModelToJson(
@@ -66,6 +76,10 @@ Map<String, dynamic> _$WeatherCurrentModelToJson(
   'vis_km': instance.visKm,
   'pressure_mb': instance.pressureMb,
   'uv': instance.uv,
+  'is_day': instance.isDay,
+  'wind_degree': instance.windDegree,
+  'wind_dir': instance.windDir,
+  'last_updated_epoch': instance.lastUpdatedEpoch,
 };
 
 WeatherConditionModel _$WeatherConditionModelFromJson(
@@ -73,11 +87,16 @@ WeatherConditionModel _$WeatherConditionModelFromJson(
 ) => WeatherConditionModel(
   text: json['text'] as String,
   icon: json['icon'] as String,
+  code: (json['code'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$WeatherConditionModelToJson(
   WeatherConditionModel instance,
-) => <String, dynamic>{'text': instance.text, 'icon': instance.icon};
+) => <String, dynamic>{
+  'text': instance.text,
+  'icon': instance.icon,
+  'code': instance.code,
+};
 
 WeatherForecastModel _$WeatherForecastModelFromJson(
   Map<String, dynamic> json,
@@ -102,12 +121,14 @@ WeatherForecastDayModel _$WeatherForecastDayModelFromJson(
   hour: (json['hour'] as List<dynamic>)
       .map((e) => WeatherHourModel.fromJson(e as Map<String, dynamic>))
       .toList(),
+  dateEpoch: (json['date_epoch'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$WeatherForecastDayModelToJson(
   WeatherForecastDayModel instance,
 ) => <String, dynamic>{
   'date': instance.date,
+  'date_epoch': instance.dateEpoch,
   'astro': instance.astro.toJson(),
   'day': instance.day.toJson(),
   'hour': instance.hour.map((e) => e.toJson()).toList(),
@@ -143,11 +164,13 @@ WeatherHourModel _$WeatherHourModelFromJson(Map<String, dynamic> json) =>
         json['condition'] as Map<String, dynamic>,
       ),
       isDay: (json['is_day'] as num).toInt(),
+      timeEpoch: (json['time_epoch'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$WeatherHourModelToJson(WeatherHourModel instance) =>
     <String, dynamic>{
       'time': instance.time,
+      'time_epoch': instance.timeEpoch,
       'temp_c': instance.tempC,
       'condition': instance.condition.toJson(),
       'is_day': instance.isDay,

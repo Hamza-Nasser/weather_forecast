@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:weather_app/core/network/client/endpoints.dart';
 import 'package:weather_app/core/network/client/restful_client.dart';
 import 'package:weather_app/features/weather/data/sources/weather_remote_source_impl.dart';
+import 'package:weather_app/core/network/error/server_exceptions.dart';
 
 class MockRestfulClient extends Mock implements RestfulClient {}
 
@@ -12,10 +13,25 @@ void main() {
 
   setUp(() {
     mockClient = MockRestfulClient();
-    sut = WeatherRemoteSourceImpl(mockClient);
+    sut = WeatherRemoteSourceImpl.withApiKey(mockClient, 'test-key');
   });
 
   group('WeatherRemoteSourceImpl', () {
+    test('fails safely when the bundled API key is missing', () async {
+      final source = WeatherRemoteSourceImpl(mockClient);
+
+      expect(
+        () => source.getCurrentWeather('Cairo'),
+        throwsA(isA<ConfigurationException>()),
+      );
+      verifyNever(
+        () => mockClient.get(
+          any(),
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      );
+    });
+
     test('calls correct endpoint with query parameters', () async {
       when(
         () => mockClient.get(
@@ -26,12 +42,14 @@ void main() {
 
       await sut.getCurrentWeather('Cairo');
 
-      final captured = verify(
-        () => mockClient.get(
-          Endpoints.forecast,
-          queryParameters: captureAny(named: 'queryParameters'),
-        ),
-      ).captured.single as Map;
+      final captured =
+          verify(
+                () => mockClient.get(
+                  Endpoints.forecast,
+                  queryParameters: captureAny(named: 'queryParameters'),
+                ),
+              ).captured.single
+              as Map;
 
       expect(captured['q'], 'Cairo');
       expect(captured['days'], 7);
@@ -75,34 +93,26 @@ void main() {
         ),
       ).thenAnswer((_) async => 'invalid string response');
 
-      expect(
-        () => sut.getCurrentWeather('Cairo'),
-        throwsA(isA<Exception>()),
-      );
+      expect(() => sut.getCurrentWeather('Cairo'), throwsA(isA<Exception>()));
     });
   });
 }
 
 Map<String, dynamic> _validResponse() => {
-      'location': {
-        'name': 'Cairo',
-        'region': 'Cairo Governorate',
-        'country': 'Egypt',
-      },
-      'current': {
-        'temp_c': 35.0,
-        'condition': {
-          'text': 'Sunny',
-          'icon': '//cdn.weatherapi.com/sunny.png',
-        },
-        'humidity': 20,
-        'wind_kph': 15.0,
-        'feelslike_c': 38.0,
-        'vis_km': 10.0,
-        'pressure_mb': 1013.0,
-        'uv': 8.0,
-      },
-      'forecast': {
-        'forecastday': <Map<String, dynamic>>[],
-      },
-    };
+  'location': {
+    'name': 'Cairo',
+    'region': 'Cairo Governorate',
+    'country': 'Egypt',
+  },
+  'current': {
+    'temp_c': 35.0,
+    'condition': {'text': 'Sunny', 'icon': '//cdn.weatherapi.com/sunny.png'},
+    'humidity': 20,
+    'wind_kph': 15.0,
+    'feelslike_c': 38.0,
+    'vis_km': 10.0,
+    'pressure_mb': 1013.0,
+    'uv': 8.0,
+  },
+  'forecast': {'forecastday': <Map<String, dynamic>>[]},
+};
