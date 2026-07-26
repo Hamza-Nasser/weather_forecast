@@ -1,9 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-/// Domain entity representing weather data.
-///
-/// This is the core business object — UI and data layers depend on this.
-/// Immutable and uses Equatable for value equality.
+enum WeatherDataSource { network, cache, staleCache }
+
 class WeatherEntity extends Equatable {
   const WeatherEntity({
     required this.cityName,
@@ -11,82 +9,65 @@ class WeatherEntity extends Equatable {
     required this.condition,
     required this.humidity,
     required this.windKph,
+    this.conditionCode = 0,
+    this.isDay = true,
+    this.windDirection = '',
+    this.windDegree = 0,
     this.iconUrl,
     this.region = '',
     this.country = '',
-    this.feelsLikeCelsius = 0.0,
-    this.visibilityKm = 0.0,
-    this.pressureMb = 0.0,
-    this.uvIndex = 0.0,
+    this.feelsLikeCelsius = 0,
+    this.visibilityKm = 0,
+    this.pressureMb = 0,
+    this.uvIndex = 0,
     this.sunrise = '',
     this.sunset = '',
     this.moonPhase = '',
     this.moonrise = '',
+    this.locationUtcOffsetMinutes = 0,
+    this.observedAt,
     this.hourlyForecast = const [],
     this.dailyForecast = const [],
+    this.dataSource = WeatherDataSource.network,
   });
 
-  /// The name of the city.
   final String cityName;
-
-  /// Temperature in Celsius.
   final double temperatureCelsius;
-
-  /// Weather condition text (e.g., "Sunny", "Cloudy").
   final String condition;
-
-  /// Humidity percentage.
+  final int conditionCode;
+  final bool isDay;
   final int humidity;
-
-  /// Wind speed in kilometers per hour.
   final double windKph;
-
-  /// URL to the weather condition icon.
+  final String windDirection;
+  final int windDegree;
   final String? iconUrl;
-
-  /// The geographic region.
   final String region;
-
-  /// The geographic country.
   final String country;
-
-  /// Feels like temperature in Celsius.
   final double feelsLikeCelsius;
-
-  /// Visibility in kilometers.
   final double visibilityKm;
-
-  /// Atmospheric pressure in millibars (hPa).
   final double pressureMb;
-
-  /// UV Index.
   final double uvIndex;
-
-  /// Sunrise time.
   final String sunrise;
-
-  /// Sunset time.
   final String sunset;
-
-  /// Moon phase name.
   final String moonPhase;
-
-  /// Moonrise time.
   final String moonrise;
-
-  /// Hourly weather forecast.
+  final int locationUtcOffsetMinutes;
+  final DateTime? observedAt;
   final List<WeatherHourEntity> hourlyForecast;
-
-  /// Daily weather forecast.
   final List<WeatherDailyForecastEntity> dailyForecast;
+  final WeatherDataSource dataSource;
 
   @override
   List<Object?> get props => [
     cityName,
     temperatureCelsius,
     condition,
+    conditionCode,
+    isDay,
     humidity,
     windKph,
+    windDirection,
+    windDegree,
     iconUrl,
     region,
     country,
@@ -98,47 +79,72 @@ class WeatherEntity extends Equatable {
     sunset,
     moonPhase,
     moonrise,
+    locationUtcOffsetMinutes,
+    observedAt,
     hourlyForecast,
     dailyForecast,
+    dataSource,
   ];
 }
 
-/// Domain entity representing hourly weather data.
 class WeatherHourEntity extends Equatable {
-  final String time;
-  final double tempC;
-  final String condition;
-  final String iconUrl;
-  final int isDay;
-
   const WeatherHourEntity({
     required this.time,
     required this.tempC,
     required this.condition,
     required this.iconUrl,
     required this.isDay,
+    this.timeEpoch = 0,
+    this.conditionCode = 0,
   });
 
+  final String time;
+  final int timeEpoch;
+  final double tempC;
+  final String condition;
+  final int conditionCode;
+  final String iconUrl;
+  final int isDay;
+
   @override
-  List<Object?> get props => [time, tempC, condition, iconUrl, isDay];
+  List<Object?> get props => [
+    time,
+    timeEpoch,
+    tempC,
+    condition,
+    conditionCode,
+    iconUrl,
+    isDay,
+  ];
 }
 
-/// Domain entity representing daily weather forecast.
 class WeatherDailyForecastEntity extends Equatable {
-  final String date;
-  final double maxTempC;
-  final double minTempC;
-  final String condition;
-  final String iconUrl;
-
   const WeatherDailyForecastEntity({
     required this.date,
     required this.maxTempC,
     required this.minTempC,
     required this.condition,
     required this.iconUrl,
+    this.dateEpoch = 0,
+    this.conditionCode = 0,
   });
 
+  final String date;
+  final int dateEpoch;
+  final double maxTempC;
+  final double minTempC;
+  final String condition;
+  final int conditionCode;
+  final String iconUrl;
+
   @override
-  List<Object?> get props => [date, maxTempC, minTempC, condition, iconUrl];
+  List<Object?> get props => [
+    date,
+    dateEpoch,
+    maxTempC,
+    minTempC,
+    condition,
+    conditionCode,
+    iconUrl,
+  ];
 }
