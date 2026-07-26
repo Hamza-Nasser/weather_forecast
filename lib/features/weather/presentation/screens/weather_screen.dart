@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:weather_app/configurations/di/injector.dart';
 import 'package:weather_app/configurations/navigation/app_routes.dart';
 import 'package:weather_app/configurations/ui/dimensions/app_dimensions.dart';
 import 'package:weather_app/configurations/ui/theme/theme_data.dart';
-import 'package:weather_app/core/services/prefs/app_preferences.dart';
 import 'package:weather_app/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:weather_app/features/settings/presentation/bloc/settings_state.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_bloc.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_event.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_state.dart';
+import 'package:weather_app/features/weather/domain/weather_defaults.dart';
 import 'package:weather_app/features/weather/presentation/components/quick_city_chips.dart';
 import 'package:weather_app/features/weather/presentation/components/weather_state_content.dart';
 import 'package:weather_app/features/weather/presentation/components/weather_visuals.dart';
@@ -19,33 +18,23 @@ import 'package:weather_app/l10n/app_localizations.dart';
 import 'package:weather_app/shared/ui/widgets/app_bar.dart';
 import 'package:weather_app/shared/ui/widgets/text.dart';
 
-/// Default city used when no last city preference is stored.
-const _defaultCity = 'Cairo';
-
 /// Weather home screen with a dark gradient background and glass weather card.
 class WeatherScreen extends StatelessWidget {
   const WeatherScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final lastCity = sl<AppPreferences>().getLastCity();
-    final initialCity = lastCity.isNotEmpty ? lastCity : _defaultCity;
-
-    return BlocProvider(
-      create: (context) =>
-          sl<WeatherBloc>()..add(WeatherFetchRequested(initialCity)),
-      child: BlocListener<SettingsCubit, SettingsState>(
-        listenWhen: (previous, current) => previous.locale != current.locale,
-        listener: (context, state) {
-          final bloc = context.read<WeatherBloc>();
-          if (bloc.state.searchQuery.isNotEmpty) {
-            bloc.add(
-              WeatherFetchRequested(bloc.state.searchQuery, forceRefresh: true),
-            );
-          }
-        },
-        child: const WeatherScreenContent(),
-      ),
+    return BlocListener<SettingsCubit, SettingsState>(
+      listenWhen: (previous, current) => previous.locale != current.locale,
+      listener: (context, state) {
+        final bloc = context.read<WeatherBloc>();
+        if (bloc.state.searchQuery.isNotEmpty) {
+          bloc.add(
+            WeatherFetchRequested(bloc.state.searchQuery, forceRefresh: true),
+          );
+        }
+      },
+      child: const WeatherScreenContent(),
     );
   }
 }
@@ -231,7 +220,7 @@ class _WeatherScreenContentState extends State<WeatherScreenContent> {
                         onRetry: () {
                           final lastQuery = state.searchQuery.isNotEmpty
                               ? state.searchQuery
-                              : _defaultCity;
+                              : defaultWeatherCity;
                           _searchCity(lastQuery);
                         },
                       ),
