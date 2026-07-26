@@ -1,6 +1,8 @@
 # Weather App
 
-A Flutter weather application with glassmorphic UI, multi-language support, and real-time weather data.
+A mobile Flutter weather application for Android and iOS with a
+glassmorphic UI, English/Arabic support, offline cache fallback, and
+real-time weather data from WeatherAPI.com.
 
 ## Getting Started
 
@@ -33,6 +35,13 @@ A Flutter weather application with glassmorphic UI, multi-language support, and 
 
 > **Important:** Never commit the `.env` file. It is listed in `.gitignore`. Only `.env.example` (with empty values) should be tracked.
 
+`WEATHER_API_KEY` is compiled into the Android/iOS application by
+`--dart-define-from-file`. Like every key shipped in a client app, it can be
+extracted by a determined user. Restrict and monitor the key in the provider
+dashboard, and never print it in logs.
+
+The Android and iOS bundle identifier is `com.tocaan.weatherdemo`.
+
 ## Project Structure
 
 ```
@@ -61,3 +70,10 @@ After modifying `.arb` files, regenerate with:
 ```bash
 flutter gen-l10n
 ```
+
+## Supported Platforms
+
+This project intentionally supports Android and iOS only.
+
+Weather data is provided by WeatherAPI.com. Forecasts are informational and
+may differ from actual conditions.
