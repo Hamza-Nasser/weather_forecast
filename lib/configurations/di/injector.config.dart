@@ -19,6 +19,7 @@ import 'package:weather_app/core/cache/memory_cache_client.dart' as _i232;
 import 'package:weather_app/core/network/client/dio_restful_client.dart'
     as _i729;
 import 'package:weather_app/core/network/client/restful_client.dart' as _i727;
+import 'package:weather_app/core/services/app_error_reporter.dart' as _i123;
 import 'package:weather_app/core/services/prefs/app_preferences.dart' as _i1060;
 import 'package:weather_app/features/settings/presentation/bloc/settings_cubit.dart'
     as _i985;
@@ -48,6 +49,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1060.AppPreferences>(
       () => const _i1060.AppPreferencesImpl(),
     );
+    gh.lazySingleton<_i123.AppErrorReporter>(
+      () => const _i123.DeveloperLogErrorReporter(),
+    );
     gh.lazySingleton<_i727.RestfulClient>(
       () => _i729.DioRestfulClient(gh<_i1060.AppPreferences>()),
     );
@@ -70,19 +74,26 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i985.SettingsCubit(
         gh<_i1060.AppPreferences>(),
         gh<_i1006.CacheClient>(),
+        gh<_i123.AppErrorReporter>(),
       ),
     );
     gh.factory<_i504.WeatherRepository>(
       () => _i530.WeatherRepositoryImpl(
         gh<_i578.WeatherRemoteSource>(),
         gh<_i1006.CacheClient>(),
+        gh<_i1060.AppPreferences>(),
+        gh<_i123.AppErrorReporter>(),
       ),
     );
     gh.factory<_i297.GetCurrentWeatherUseCase>(
       () => _i297.GetCurrentWeatherUseCase(gh<_i504.WeatherRepository>()),
     );
     gh.factory<_i950.WeatherBloc>(
-      () => _i950.WeatherBloc(gh<_i297.GetCurrentWeatherUseCase>()),
+      () => _i950.WeatherBloc(
+        gh<_i297.GetCurrentWeatherUseCase>(),
+        gh<_i1060.AppPreferences>(),
+        gh<_i123.AppErrorReporter>(),
+      ),
     );
     return this;
   }

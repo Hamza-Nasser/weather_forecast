@@ -2,6 +2,8 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:weather_app/core/network/error/server_exceptions.dart';
+import 'package:weather_app/core/services/app_error_reporter.dart';
+import 'package:weather_app/core/services/prefs/app_preferences.dart';
 import 'package:weather_app/features/weather/domain/entities/weather_entity.dart';
 import 'package:weather_app/features/weather/domain/usecases/get_current_weather_usecase.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_bloc.dart';
@@ -11,8 +13,14 @@ import 'package:weather_app/features/weather/presentation/bloc/weather_state.dar
 class MockGetCurrentWeatherUseCase extends Mock
     implements GetCurrentWeatherUseCase {}
 
+class MockAppPreferences extends Mock implements AppPreferences {}
+
+class MockAppErrorReporter extends Mock implements AppErrorReporter {}
+
 void main() {
   late MockGetCurrentWeatherUseCase mockUseCase;
+  late MockAppPreferences mockPreferences;
+  late MockAppErrorReporter mockErrorReporter;
 
   const testEntity = WeatherEntity(
     cityName: 'Cairo',
@@ -35,11 +43,16 @@ void main() {
 
   setUp(() {
     mockUseCase = MockGetCurrentWeatherUseCase();
+    mockPreferences = MockAppPreferences();
+    mockErrorReporter = MockAppErrorReporter();
+    when(
+      () => mockPreferences.setLastCity(any()),
+    ).thenAnswer((_) async => true);
   });
 
   group('WeatherBloc', () {
     test('initial state is correct', () {
-      final bloc = WeatherBloc(mockUseCase);
+      final bloc = WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter);
       expect(bloc.state.status, WeatherStatus.initial);
       expect(bloc.state.searchQuery, '');
       expect(bloc.state.cityName, '');
@@ -48,18 +61,35 @@ void main() {
       bloc.close();
     });
 
+    test('copyWith can clear a previous nullable error', () {
+      const failed = WeatherState(
+        error: ServerException('failed'),
+        errorMessage: 'failed',
+      );
+
+      final cleared = failed.copyWith(clearError: true);
+
+      expect(cleared.error, isNull);
+      expect(cleared.errorMessage, isNull);
+    });
+
     group('WeatherFetchRequested', () {
       blocTest<WeatherBloc, WeatherState>(
         'emits [loading, success] when fetch succeeds',
         setUp: () {
-          when(() => mockUseCase('Cairo', forceRefresh: false))
-              .thenAnswer((_) async => testEntity);
+          when(
+            () => mockUseCase('Cairo', forceRefresh: false),
+          ).thenAnswer((_) async => testEntity);
         },
-        build: () => WeatherBloc(mockUseCase),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
         act: (bloc) => bloc.add(const WeatherFetchRequested('Cairo')),
         expect: () => [
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.loading),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.loading,
+          ),
           isA<WeatherState>()
               .having((s) => s.status, 'status', WeatherStatus.success)
               .having((s) => s.cityName, 'cityName', 'Cairo')
@@ -78,14 +108,19 @@ void main() {
       blocTest<WeatherBloc, WeatherState>(
         'emits [loading, failure] when UserFriendlyException is thrown',
         setUp: () {
-          when(() => mockUseCase('Invalid', forceRefresh: false))
-              .thenThrow(const ServerException('City not found'));
+          when(
+            () => mockUseCase('Invalid', forceRefresh: false),
+          ).thenThrow(const ServerException('City not found'));
         },
-        build: () => WeatherBloc(mockUseCase),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
         act: (bloc) => bloc.add(const WeatherFetchRequested('Invalid')),
         expect: () => [
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.loading),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.loading,
+          ),
           isA<WeatherState>()
               .having((s) => s.status, 'status', WeatherStatus.failure)
               .having((s) => s.errorMessage, 'errorMessage', 'City not found')
@@ -96,14 +131,19 @@ void main() {
       blocTest<WeatherBloc, WeatherState>(
         'emits [loading, failure] with null error on generic exception',
         setUp: () {
-          when(() => mockUseCase('Crash', forceRefresh: false))
-              .thenThrow(Exception('Unexpected'));
+          when(
+            () => mockUseCase('Crash', forceRefresh: false),
+          ).thenThrow(Exception('Unexpected'));
         },
-        build: () => WeatherBloc(mockUseCase),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
         act: (bloc) => bloc.add(const WeatherFetchRequested('Crash')),
         expect: () => [
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.loading),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.loading,
+          ),
           isA<WeatherState>()
               .having((s) => s.status, 'status', WeatherStatus.failure)
               .having((s) => s.error, 'error', isNull)
@@ -114,16 +154,20 @@ void main() {
       blocTest<WeatherBloc, WeatherState>(
         'passes forceRefresh: true to use case',
         setUp: () {
-          when(() => mockUseCase('Cairo', forceRefresh: true))
-              .thenAnswer((_) async => testEntity);
+          when(
+            () => mockUseCase('Cairo', forceRefresh: true),
+          ).thenAnswer((_) async => testEntity);
         },
-        build: () => WeatherBloc(mockUseCase),
-        act: (bloc) => bloc.add(
-          const WeatherFetchRequested('Cairo', forceRefresh: true),
-        ),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
+        act: (bloc) =>
+            bloc.add(const WeatherFetchRequested('Cairo', forceRefresh: true)),
         expect: () => [
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.loading),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.loading,
+          ),
           isA<WeatherState>()
               .having((s) => s.status, 'status', WeatherStatus.success)
               .having((s) => s.cityName, 'cityName', 'Cairo'),
@@ -136,10 +180,12 @@ void main() {
       blocTest<WeatherBloc, WeatherState>(
         'maps all weather entity fields to state',
         setUp: () {
-          when(() => mockUseCase('Cairo', forceRefresh: false))
-              .thenAnswer((_) async => testEntity);
+          when(
+            () => mockUseCase('Cairo', forceRefresh: false),
+          ).thenAnswer((_) async => testEntity);
         },
-        build: () => WeatherBloc(mockUseCase),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
         act: (bloc) => bloc.add(const WeatherFetchRequested('Cairo')),
         expect: () => [
           isA<WeatherState>(),
@@ -163,12 +209,15 @@ void main() {
       blocTest<WeatherBloc, WeatherState>(
         'dispatches fetch with forceRefresh when searchQuery is set',
         setUp: () {
-          when(() => mockUseCase('Cairo', forceRefresh: false))
-              .thenAnswer((_) async => testEntity);
-          when(() => mockUseCase('Cairo', forceRefresh: true))
-              .thenAnswer((_) async => testEntity);
+          when(
+            () => mockUseCase('Cairo', forceRefresh: false),
+          ).thenAnswer((_) async => testEntity);
+          when(
+            () => mockUseCase('Cairo', forceRefresh: true),
+          ).thenAnswer((_) async => testEntity);
         },
-        build: () => WeatherBloc(mockUseCase),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
         act: (bloc) async {
           bloc.add(const WeatherFetchRequested('Cairo'));
           await Future.delayed(const Duration(milliseconds: 100));
@@ -177,15 +226,27 @@ void main() {
         wait: const Duration(milliseconds: 300),
         expect: () => [
           // Initial fetch: loading -> success
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.loading),
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.success),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.loading,
+          ),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.success,
+          ),
           // Refresh: loading -> success
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.loading),
-          isA<WeatherState>()
-              .having((s) => s.status, 'status', WeatherStatus.success),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.loading,
+          ),
+          isA<WeatherState>().having(
+            (s) => s.status,
+            'status',
+            WeatherStatus.success,
+          ),
         ],
         verify: (_) {
           verify(() => mockUseCase('Cairo', forceRefresh: true)).called(1);
@@ -194,7 +255,8 @@ void main() {
 
       blocTest<WeatherBloc, WeatherState>(
         'does nothing when searchQuery is empty',
-        build: () => WeatherBloc(mockUseCase),
+        build: () =>
+            WeatherBloc(mockUseCase, mockPreferences, mockErrorReporter),
         act: (bloc) => bloc.add(const WeatherRefreshRequested()),
         expect: () => <WeatherState>[],
       );
@@ -228,10 +290,7 @@ void main() {
 
     test('supports lastUpdated and isFromCache', () {
       final now = DateTime(2026, 7, 25, 12, 0);
-      final state = WeatherState(
-        lastUpdated: now,
-        isFromCache: true,
-      );
+      final state = WeatherState(lastUpdated: now, isFromCache: true);
 
       expect(state.lastUpdated, now);
       expect(state.isFromCache, isTrue);
@@ -248,8 +307,7 @@ void main() {
       expect(event1, isNot(equals(event3)));
     });
 
-    test('WeatherFetchRequested with different forceRefresh are not equal',
-        () {
+    test('WeatherFetchRequested with different forceRefresh are not equal', () {
       const event1 = WeatherFetchRequested('Cairo');
       const event2 = WeatherFetchRequested('Cairo', forceRefresh: true);
 

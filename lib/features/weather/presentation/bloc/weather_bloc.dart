@@ -1,53 +1,63 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:weather_app/core/app_exceptions/app_exceptions.dart';
+import 'package:weather_app/core/services/app_error_reporter.dart';
+import 'package:weather_app/core/services/prefs/app_preferences.dart';
+import 'package:weather_app/features/weather/domain/entities/weather_entity.dart';
 import 'package:weather_app/features/weather/domain/usecases/get_current_weather_usecase.dart';
 
 import 'weather_event.dart';
 import 'weather_state.dart';
 
-/// BLoC managing weather data fetching and state.
-///
-/// Uses event-driven architecture for the multi-step fetch flow.
-/// Inject use cases through the constructor — no service locator access.
 @injectable
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
-  final GetCurrentWeatherUseCase _getCurrentWeather;
-
-  WeatherBloc(this._getCurrentWeather) : super(const WeatherState()) {
+  WeatherBloc(this._getCurrentWeather, this._preferences, this._errorReporter)
+    : super(const WeatherState()) {
     on<WeatherFetchRequested>(_onFetchRequested);
     on<WeatherRefreshRequested>(_onRefreshRequested);
   }
+
+  final GetCurrentWeatherUseCase _getCurrentWeather;
+  final AppPreferences _preferences;
+  final AppErrorReporter _errorReporter;
+  int _latestRequestId = 0;
 
   Future<void> _onFetchRequested(
     WeatherFetchRequested event,
     Emitter<WeatherState> emit,
   ) async {
+    final requestId = ++_latestRequestId;
+    final query = event.city.trim();
     emit(
       state.copyWith(
         status: WeatherStatus.loading,
-        error: null,
-        errorMessage: null,
+        searchQuery: query,
+        clearError: true,
       ),
     );
 
     try {
       final weather = await _getCurrentWeather(
-        event.city,
+        query,
         forceRefresh: event.forceRefresh,
       );
-      if (isClosed) return;
+      if (isClosed || requestId != _latestRequestId) return;
+
       emit(
         state.copyWith(
           status: WeatherStatus.success,
-          searchQuery: event.city,
+          searchQuery: query,
           cityName: weather.cityName,
           region: weather.region,
           country: weather.country,
           temperatureCelsius: weather.temperatureCelsius,
           condition: weather.condition,
+          conditionCode: weather.conditionCode,
+          isDay: weather.isDay,
           humidity: weather.humidity,
           windKph: weather.windKph,
+          windDirection: weather.windDirection,
+          windDegree: weather.windDegree,
           iconUrl: weather.iconUrl,
           feelsLikeCelsius: weather.feelsLikeCelsius,
           visibilityKm: weather.visibilityKm,
@@ -57,37 +67,45 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
           sunset: weather.sunset,
           moonPhase: weather.moonPhase,
           moonrise: weather.moonrise,
+          locationUtcOffsetMinutes: weather.locationUtcOffsetMinutes,
           hourlyForecast: weather.hourlyForecast,
           dailyForecast: weather.dailyForecast,
-          lastUpdated: DateTime.now(),
-          isFromCache: !event.forceRefresh,
+          lastUpdated: weather.observedAt ?? DateTime.now().toUtc(),
+          isFromCache: weather.dataSource != WeatherDataSource.network,
+          isStale: weather.dataSource == WeatherDataSource.staleCache,
+          clearError: true,
         ),
       );
-    } on UserFriendlyException catch (e) {
-      if (isClosed) return;
+
+      try {
+        await _preferences.setLastCity(query);
+      } catch (error, stackTrace) {
+        _errorReporter.record(
+          error,
+          stackTrace,
+          context: 'Persist last successful city',
+        );
+      }
+    } on UserFriendlyException catch (error) {
+      if (isClosed || requestId != _latestRequestId) return;
       emit(
         state.copyWith(
           status: WeatherStatus.failure,
-          errorMessage: e.message,
-          error: e,
+          errorMessage: error.message,
+          error: error,
         ),
       );
-    } catch (_) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          status: WeatherStatus.failure,
-          error: null,
-          errorMessage: null,
-        ),
-      );
+    } catch (error, stackTrace) {
+      _errorReporter.record(error, stackTrace, context: 'Fetch weather');
+      if (isClosed || requestId != _latestRequestId) return;
+      emit(state.copyWith(status: WeatherStatus.failure, clearError: true));
     }
   }
 
-  Future<void> _onRefreshRequested(
+  void _onRefreshRequested(
     WeatherRefreshRequested event,
     Emitter<WeatherState> emit,
-  ) async {
+  ) {
     if (state.searchQuery.isNotEmpty) {
       add(WeatherFetchRequested(state.searchQuery, forceRefresh: true));
     }
