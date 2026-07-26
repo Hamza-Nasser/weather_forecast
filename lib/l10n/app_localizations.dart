@@ -793,6 +793,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} hr ago'**
   String hoursAgo(int count);
+
+  /// No description provided for @pageNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get pageNotFound;
+
+  /// No description provided for @searchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchAction;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get clearSearch;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettings;
+
+  /// No description provided for @cachedWeather.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing saved weather'**
+  String get cachedWeather;
+
+  /// No description provided for @staleWeather.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline — showing older saved weather'**
+  String get staleWeather;
+
+  /// No description provided for @weatherDataAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather data provided by WeatherAPI.com'**
+  String get weatherDataAttribution;
+
+  /// No description provided for @weatherDataDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Forecasts are informational and may differ from actual conditions.'**
+  String get weatherDataDisclaimer;
+
+  /// No description provided for @errorMissingApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather service is not configured. Add WEATHER_API_KEY to the bundled build settings.'**
+  String get errorMissingApiKey;
 }
 
 class _AppLocalizationsDelegate

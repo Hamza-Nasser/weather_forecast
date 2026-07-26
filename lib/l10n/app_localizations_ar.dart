@@ -372,4 +372,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String hoursAgo(int count) {
     return 'منذ $count ساعة';
   }
+
+  @override
+  String get pageNotFound => 'الصفحة غير موجودة';
+
+  @override
+  String get searchAction => 'بحث';
+
+  @override
+  String get clearSearch => 'مسح البحث';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get cachedWeather => 'يتم عرض بيانات الطقس المحفوظة';
+
+  @override
+  String get staleWeather => 'غير متصل — يتم عرض بيانات محفوظة أقدم';
+
+  @override
+  String get weatherDataAttribution => 'بيانات الطقس مقدمة من WeatherAPI.com';
+
+  @override
+  String get weatherDataDisclaimer =>
+      'التوقعات لأغراض معلوماتية وقد تختلف عن الظروف الفعلية.';
+
+  @override
+  String get errorMissingApiKey =>
+      'خدمة الطقس غير مهيأة. أضف WEATHER_API_KEY إلى إعدادات البناء المضمّنة.';
 }

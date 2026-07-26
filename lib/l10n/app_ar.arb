@@ -115,5 +115,14 @@
   "lastUpdated": "آخر تحديث {time}",
   "justNow": "الآن",
   "minutesAgo": "منذ {count} دقيقة",
-  "hoursAgo": "منذ {count} ساعة"
+  "hoursAgo": "منذ {count} ساعة",
+  "pageNotFound": "الصفحة غير موجودة",
+  "searchAction": "بحث",
+  "clearSearch": "مسح البحث",
+  "openSettings": "فتح الإعدادات",
+  "cachedWeather": "يتم عرض بيانات الطقس المحفوظة",
+  "staleWeather": "غير متصل — يتم عرض بيانات محفوظة أقدم",
+  "weatherDataAttribution": "بيانات الطقس مقدمة من WeatherAPI.com",
+  "weatherDataDisclaimer": "التوقعات لأغراض معلوماتية وقد تختلف عن الظروف الفعلية.",
+  "errorMissingApiKey": "خدمة الطقس غير مهيأة. أضف WEATHER_API_KEY إلى إعدادات البناء المضمّنة."
 }

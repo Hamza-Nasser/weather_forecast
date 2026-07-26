@@ -371,4 +371,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String hoursAgo(int count) {
     return '$count hr ago';
   }
+
+  @override
+  String get pageNotFound => 'Page not found';
+
+  @override
+  String get searchAction => 'Search';
+
+  @override
+  String get clearSearch => 'Clear search';
+
+  @override
+  String get openSettings => 'Open settings';
+
+  @override
+  String get cachedWeather => 'Showing saved weather';
+
+  @override
+  String get staleWeather => 'Offline — showing older saved weather';
+
+  @override
+  String get weatherDataAttribution =>
+      'Weather data provided by WeatherAPI.com';
+
+  @override
+  String get weatherDataDisclaimer =>
+      'Forecasts are informational and may differ from actual conditions.';
+
+  @override
+  String get errorMissingApiKey =>
+      'Weather service is not configured. Add WEATHER_API_KEY to the bundled build settings.';
 }

@@ -324,5 +324,14 @@
         "example": "2"
       }
     }
-  }
+  },
+  "pageNotFound": "Page not found",
+  "searchAction": "Search",
+  "clearSearch": "Clear search",
+  "openSettings": "Open settings",
+  "cachedWeather": "Showing saved weather",
+  "staleWeather": "Offline — showing older saved weather",
+  "weatherDataAttribution": "Weather data provided by WeatherAPI.com",
+  "weatherDataDisclaimer": "Forecasts are informational and may differ from actual conditions.",
+  "errorMissingApiKey": "Weather service is not configured. Add WEATHER_API_KEY to the bundled build settings."
 }
