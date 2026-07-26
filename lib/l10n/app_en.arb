@@ -1,0 +1,328 @@
+{
+  "@@locale": "en",
+  "appTitle": "Weather App",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "errorSomethingWentWrong": "Something went wrong",
+  "@errorSomethingWentWrong": {
+    "description": "Generic error message"
+  },
+  "errorNoInternetConnection": "No internet connection",
+  "@errorNoInternetConnection": {
+    "description": "Error message when there is no internet"
+  },
+  "errorFetchData": "Error during communication",
+  "@errorFetchData": {
+    "description": "Error message when data fetch fails due to communication issues"
+  },
+  "errorBadRequest": "Bad request, please check your request and try again",
+  "@errorBadRequest": {
+    "description": "Error message for bad requests"
+  },
+  "errorUnauthorized": "Unauthorized",
+  "@errorUnauthorized": {
+    "description": "Error message for unauthorized access"
+  },
+  "errorConflict": "Conflict occurred",
+  "@errorConflict": {
+    "description": "Error message when a request conflict occurs"
+  },
+  "errorInternalServer": "Internal server error",
+  "@errorInternalServer": {
+    "description": "Error message for internal server issues"
+  },
+  "errorServiceUnavailable": "Service unavailable, try again later",
+  "@errorServiceUnavailable": {
+    "description": "Error message when the service is down"
+  },
+  "errorReadFromDevice": "Can't read from device",
+  "@errorReadFromDevice": {
+    "description": "Error message when reading from device storage fails"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button label"
+  },
+  "noDataAvailable": "No data available",
+  "@noDataAvailable": {
+    "description": "Empty state message"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home tab label"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search tab label"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings tab label"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Label for language settings option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language name"
+  },
+  "arabic": "Arabic",
+  "@arabic": {
+    "description": "Arabic language name"
+  },
+  "weather": "Weather",
+  "@weather": {
+    "description": "Weather app bar title"
+  },
+  "searchCity": "Search city...",
+  "@searchCity": {
+    "description": "Search field hint text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button label"
+  },
+  "welcomeTitle": "Welcome to Homa Weather",
+  "@welcomeTitle": {
+    "description": "Welcome card title"
+  },
+  "welcomeSubtitle": "Search for any city to view real-time weather details and hourly forecasts.",
+  "@welcomeSubtitle": {
+    "description": "Welcome card subtitle"
+  },
+  "failedToLoadWeather": "Failed to load weather data.",
+  "@failedToLoadWeather": {
+    "description": "Error message when weather data fails to load"
+  },
+  "details": "Details",
+  "@details": {
+    "description": "Details section header"
+  },
+  "realFeel": "RealFeel",
+  "@realFeel": {
+    "description": "Real feel temperature label"
+  },
+  "humidityLabel": "Humidity",
+  "@humidityLabel": {
+    "description": "Humidity stat label"
+  },
+  "windForce": "W. force",
+  "@windForce": {
+    "description": "Wind force stat label"
+  },
+  "pressure": "Pressure",
+  "@pressure": {
+    "description": "Pressure stat label"
+  },
+  "nDayForecast": "{count}-Day Forecast",
+  "@nDayForecast": {
+    "description": "N-day forecast section header",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today label for daily forecast"
+  },
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "uvIndex": "UV index",
+  "@uvIndex": {
+    "description": "UV index card title"
+  },
+  "feelsLike": "Feels like",
+  "@feelsLike": {
+    "description": "Feels like card title"
+  },
+  "wind": "Wind",
+  "@wind": {
+    "description": "Wind card title"
+  },
+  "sunriseLabel": "Sunrise",
+  "@sunriseLabel": {
+    "description": "Sunrise card title"
+  },
+  "visibility": "Visibility",
+  "@visibility": {
+    "description": "Visibility card title"
+  },
+  "moonPhaseLabel": "Moon phase",
+  "@moonPhaseLabel": {
+    "description": "Moon phase card title"
+  },
+  "lifestyle": "Lifestyle",
+  "@lifestyle": {
+    "description": "Lifestyle card title"
+  },
+  "low": "Low",
+  "@low": {
+    "description": "Low level label"
+  },
+  "moderate": "Moderate",
+  "@moderate": {
+    "description": "Moderate level label"
+  },
+  "high": "High",
+  "@high": {
+    "description": "High level label"
+  },
+  "weatherInsights": "Weather Insights",
+  "@weatherInsights": {
+    "description": "Weather insights section title"
+  },
+  "uvIndexLabel": "UV Index",
+  "@uvIndexLabel": {
+    "description": "UV Index insight label"
+  },
+  "airQuality": "Air Quality",
+  "@airQuality": {
+    "description": "Air quality insight label"
+  },
+  "clothing": "Clothing",
+  "@clothing": {
+    "description": "Clothing insight label"
+  },
+  "outdoorSport": "Outdoor Sport",
+  "@outdoorSport": {
+    "description": "Outdoor sport insight label"
+  },
+  "uvHighRisk": "Wear sunscreen & shades.",
+  "@uvHighRisk": {
+    "description": "UV advice for sunny/clear conditions"
+  },
+  "uvSafe": "Safe to be outdoors.",
+  "@uvSafe": {
+    "description": "UV advice for non-sunny conditions"
+  },
+  "airExcellent": "Fresh air, great for walks.",
+  "@airExcellent": {
+    "description": "Air quality advice when excellent"
+  },
+  "airModerate": "Slight humidity dust risk.",
+  "@airModerate": {
+    "description": "Air quality advice when moderate"
+  },
+  "clothingHeavy": "Heavy Layers",
+  "clothingHeavyAdvice": "Warm coat and gloves recommended.",
+  "clothingJacket": "Jacket / Hoodie",
+  "clothingJacketAdvice": "Comfortable long sleeves.",
+  "clothingLight": "Light T-Shirt",
+  "clothingLightAdvice": "Perfect for shorts and breathable fabric.",
+  "sportNotRecommended": "Not Recommended",
+  "sportNotRecommendedAdvice": "Wet ground & poor visibility.",
+  "sportIndoor": "Indoor Only",
+  "sportIndoorAdvice": "Excessive heat warning.",
+  "sportExcellent": "Excellent",
+  "sportExcellentAdvice": "Perfect for outdoor jogging/cycling.",
+  "uvAlmostNoRisk": "Almost no risk of sunburn",
+  "uvLowRisk": "Low risk of UV harm",
+  "uvModerateHighRisk": "Moderate to high risk of sunburn",
+  "excellentVisibility": "Excellent visibility",
+  "goodVisibility": "Good visibility",
+  "moderateVisibility": "Moderate visibility",
+  "pressureStuffy": "May feel stuffy for sensitive individuals",
+  "pressureStable": "Stable atmospheric conditions",
+  "pressureNormal": "Normal barometric pressure",
+  "newMoon": "New moon",
+  "noMoonrise": "No moonrise",
+  "feelsWarmer": "Feels warmer than actual temperature",
+  "feelsCooler": "Feels cooler than actual temperature",
+  "feelsSimilar": "Feels similar to actual temperature",
+  "actualTemperature": "Actual temperature: {temp}°",
+  "@actualTemperature": {
+    "description": "Actual temperature comparison label",
+    "placeholders": {
+      "temp": {
+        "type": "int"
+      }
+    }
+  },
+  "humidityDry": "Dry air, skin might feel dry",
+  "humidityComfortable": "Comfortable, normal humidity levels",
+  "humidityFairly": "Fairly humid, drying will take longer",
+  "sunsetTime": "Sunset: {time}",
+  "@sunsetTime": {
+    "description": "Sunset time label",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "windDirection": "{direction} wind",
+  "@windDirection": {
+    "description": "Wind direction label",
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "windLightAir": "light air on the face",
+  "windGentleBreeze": "gentle breeze on the face",
+  "windModerateBreeze": "moderate breeze on the face",
+  "windStrongBreeze": "strong breeze on the face",
+  "greatForRunning": "Great for running",
+  "tooHotForRunning": "Too hot for running",
+  "unsuitableForRunning": "Unsuitable for running",
+  "idealFishing": "Ideal fishing conditions",
+  "notIdealFishing": "Not ideal fishing",
+  "excellentForHiking": "Excellent for hiking",
+  "coldForHiking": "Cold for hiking",
+  "unsuitableForHiking": "Unsuitable for hiking",
+  "airExcellentValue": "35 (Excellent)",
+  "airGoodValue": "42 (Good)",
+  "airModerateValue": "68 (Moderate)",
+  "uvHighValue": "7 (High)",
+  "uvModerateValue": "3 (Moderate)",
+  "uvLowValue": "1 (Low)",
+  "egypt": "Egypt",
+  "kuwait": "Kuwait",
+  "ksa": "KSA",
+  "qatar": "Qatar",
+  "morocco": "Morocco",
+  "lastUpdated": "Last updated {time}",
+  "@lastUpdated": {
+    "description": "Shows when cached data was last fetched",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "5 minutes ago"
+      }
+    }
+  },
+  "justNow": "just now",
+  "@justNow": {
+    "description": "Time indicator for very recent updates"
+  },
+  "minutesAgo": "{count} min ago",
+  "@minutesAgo": {
+    "description": "Time indicator for minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "hoursAgo": "{count} hr ago",
+  "@hoursAgo": {
+    "description": "Time indicator for hours ago",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  }
+}
