@@ -4,6 +4,7 @@ import 'package:weather_app/configurations/ui/dimensions/app_dimensions.dart';
 import 'package:weather_app/features/weather/domain/utils/weather_location_time.dart';
 import 'package:weather_app/features/weather/presentation/bloc/weather_state.dart';
 import 'package:weather_app/features/weather/presentation/components/sun_progress_calculator.dart';
+import 'package:weather_app/features/weather/presentation/components/responsive_weather_layout.dart';
 import 'package:weather_app/features/weather/presentation/components/weather_details_grid/weather_details_grid.dart';
 import 'package:weather_app/features/weather/presentation/components/weather_freshness_label.dart';
 import 'package:weather_app/features/weather/presentation/components/weather_home_card.dart';
@@ -47,7 +48,6 @@ class WeatherStateContent extends StatelessWidget {
         key: const ValueKey('failure'),
         message:
             state.error?.getLocalizedMessage(AppLocalizations.of(context)!) ??
-            state.errorMessage ??
             AppLocalizations.of(context)!.failedToLoadWeather,
         onRetry: onRetry,
       ),
@@ -82,7 +82,7 @@ class _WeatherSuccessContent extends StatelessWidget {
       AppLocalizations.of(context)!,
     );
 
-    return Column(
+    final heroCard = Column(
       children: [
         Stack(
           clipBehavior: Clip.none,
@@ -147,11 +147,15 @@ class _WeatherSuccessContent extends StatelessWidget {
             isStale: state.isStale,
           ),
         ],
+      ],
+    );
+
+    final secondaryContent = Column(
+      children: [
         if (weekly.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.l),
           WeeklyForecastSection(forecastList: weekly),
+          const SizedBox(height: AppSpacing.l),
         ],
-        const SizedBox(height: AppSpacing.l),
         WeatherDetailsGrid(
           temperatureCelsius: state.temperatureCelsius,
           conditionCode: state.conditionCode,
@@ -170,6 +174,11 @@ class _WeatherSuccessContent extends StatelessWidget {
           locationNow: locationNow,
         ),
       ],
+    );
+
+    return ResponsiveWeatherLayout(
+      heroCard: heroCard,
+      secondaryContent: secondaryContent,
     );
   }
 }

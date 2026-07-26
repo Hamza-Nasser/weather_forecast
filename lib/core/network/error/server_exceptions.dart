@@ -6,7 +6,7 @@ class ServerException extends UserFriendlyException {
 
   @override
   String getLocalizedMessage(AppLocalizations l10n) {
-    return message ?? l10n.errorSomethingWentWrong;
+    return l10n.errorSomethingWentWrong;
   }
 
   @override
@@ -32,7 +32,7 @@ class BadRequestException extends ServerException {
 
   @override
   String getLocalizedMessage(AppLocalizations l10n) {
-    return message ?? l10n.errorBadRequest;
+    return l10n.errorBadRequest;
   }
 }
 
@@ -52,7 +52,7 @@ class NotFoundException extends ServerException {
 
   @override
   String getLocalizedMessage(AppLocalizations l10n) {
-    return message ?? l10n.errorSomethingWentWrong;
+    return l10n.errorSomethingWentWrong;
   }
 }
 
@@ -91,7 +91,7 @@ class CustomException extends ServerException {
 
   @override
   String getLocalizedMessage(AppLocalizations l10n) {
-    return message ?? l10n.errorSomethingWentWrong;
+    return l10n.errorSomethingWentWrong;
   }
 }
 
