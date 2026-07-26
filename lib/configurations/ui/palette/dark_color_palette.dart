@@ -7,7 +7,7 @@ import 'package:weather_app/configurations/ui/theme/theme_data.dart';
 final class DarkColorPalette extends ColorPalette {
   DarkColorPalette({
     super.bg = const Color(0xFF0F172A),
-    super.white = const Color(0xFF1E293B),
+    super.white = const Color(0xFFFFFFFF),
     super.active = const Color(0xFF34C759),
     super.card = const Color(0xFF1E293B),
     super.dark = const Color(0xFFF8FAFC),

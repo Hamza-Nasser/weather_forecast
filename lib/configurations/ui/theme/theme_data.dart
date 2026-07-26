@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'theme_helpers.dart';
-
 /// An extension for theme to provide a color palette in context.
 ///
 /// Uses [ThemeExtension] to attach the app's color system to Flutter's [ThemeData].
@@ -351,9 +349,11 @@ class AppTypography extends ThemeExtension<AppTypography> {
 extension ThemeDataExtensions on ThemeData {
   /// The color palette set for the app.
   ColorPalette get colorPalette =>
-      extension<ColorPalette>() ?? lightColorPalette;
+      extension<ColorPalette>() ??
+      (throw StateError('ColorPalette is missing from ThemeData.extensions'));
 
   /// The typography set for the app.
   AppTypography get appTypography =>
-      extension<AppTypography>() ?? defaultTypography;
+      extension<AppTypography>() ??
+      (throw StateError('AppTypography is missing from ThemeData.extensions'));
 }

@@ -48,7 +48,7 @@ ThemeData createThemeData({
 }) => ThemeData(
   brightness: brightness,
   fontFamily: fontFamily,
-  scaffoldBackgroundColor: palette.white,
+  scaffoldBackgroundColor: palette.bg,
   colorScheme: ColorScheme.fromSeed(
     seedColor: palette.primary,
     brightness: brightness,

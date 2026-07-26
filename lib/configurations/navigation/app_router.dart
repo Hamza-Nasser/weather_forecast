@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:weather_app/configurations/navigation/route_error_screen.dart';
 import 'package:weather_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:weather_app/features/weather/presentation/screens/weather_screen.dart';
 
@@ -16,7 +18,7 @@ class AppRouter {
 
   late final GoRouter router = GoRouter(
     initialLocation: AppRoute.home.path,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
     routes: _routes,
     errorBuilder: _errorBuilder,
   );
@@ -25,27 +27,19 @@ class AppRouter {
   ///
   /// Add new routes here as features are implemented.
   List<RouteBase> get _routes => [
-        GoRoute(
-          name: AppRoute.home.name,
-          path: AppRoute.home.path,
-          builder: (context, state) => const WeatherScreen(),
-        ),
-        GoRoute(
-          name: AppRoute.settings.name,
-          path: AppRoute.settings.path,
-          builder: (context, state) => const SettingsScreen(),
-        ),
-      ];
+    GoRoute(
+      name: AppRoute.home.name,
+      path: AppRoute.home.path,
+      builder: (context, state) => const WeatherScreen(),
+    ),
+    GoRoute(
+      name: AppRoute.settings.name,
+      path: AppRoute.settings.path,
+      builder: (context, state) => const SettingsScreen(),
+    ),
+  ];
 
   /// Fallback screen for unknown routes.
-  Widget _errorBuilder(BuildContext context, GoRouterState state) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          'Page not found: ${state.uri}',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
-    );
-  }
+  Widget _errorBuilder(BuildContext context, GoRouterState state) =>
+      const RouteErrorScreen();
 }

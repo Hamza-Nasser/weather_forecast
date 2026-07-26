@@ -47,7 +47,8 @@ class _WeatherAppState extends State<WeatherApp> {
             theme: _lightTheme,
             darkTheme: _darkTheme,
             themeMode: ThemeMode.system,
-            title: 'Weather App',
+            onGenerateTitle: (context) =>
+                AppLocalizations.of(context)!.appTitle,
             locale: state.locale.isEmpty ? null : Locale(state.locale),
             localizationsDelegates: const [
               AppLocalizations.delegate,
